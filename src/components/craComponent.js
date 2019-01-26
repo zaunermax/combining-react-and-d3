@@ -38,7 +38,7 @@ const AppLink = styled.a`
 export const StdCraComponent = () => (
   <AppContainer>
     <StyledAppHeader>
-      <AppLogo src={logo} alt="logo"/>
+      <AppLogo src={logo} alt="logo" />
       <p>
         Edit <code>src/App.js</code> and save to reload.
       </p>

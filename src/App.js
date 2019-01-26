@@ -4,7 +4,7 @@ import { GlobalStyle } from './components/app/globalStyle'
 
 export const App = () => (
   <>
-    <GlobalStyle/>
-    <StdCraComponent/>
+    <GlobalStyle />
+    <StdCraComponent />
   </>
 )
