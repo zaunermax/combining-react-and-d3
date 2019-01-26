@@ -1,10 +1,13 @@
 import React from 'react'
-import { StdCraComponent } from './components/craComponent'
 import { GlobalStyle } from './components/app/globalStyle'
+import { BrowserRouter } from 'react-router-dom'
+import { Routes } from './routes'
 
 export const App = () => (
   <>
     <GlobalStyle />
-    <StdCraComponent />
+    <BrowserRouter>
+      <Routes />
+    </BrowserRouter>
   </>
 )
