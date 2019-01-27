@@ -73,6 +73,8 @@ export class HybirdForceGraph extends Component {
     width: PropTypes.number,
     height: PropTypes.number,
     linkType: PropTypes.oneOf(Object.keys(LINK_TYPES).map((key) => LINK_TYPES[key])),
+    selNode: PropTypes.string,
+    selectNode: PropTypes.func,
   }
 
   static defaultProps = {
@@ -174,9 +176,6 @@ export class HybirdForceGraph extends Component {
     this.nodeSel = selection.selectAll('circle')
     this.linkSel = selection.selectAll('path')
 
-    console.log('linkSel', this.linkSel)
-    console.log('nodeSel', this.nodeSel)
-
     this.simulation
       .nodes(this.state.data)
       .force(
@@ -207,7 +206,8 @@ export class HybirdForceGraph extends Component {
   }
 
   logNode = (name) => () => {
-    this.setState({ curSel: name })
+    const { selectNode } = this.props
+    selectNode(name)
     console.log('name', name)
   }
 
@@ -235,8 +235,9 @@ export class HybirdForceGraph extends Component {
   }
 
   render() {
-    const { height, width } = this.props
-    const { curSel, data, links } = this.state
+    const { height, width, selNode } = this.props
+    const { data, links } = this.state
+    console.log('rerender force graph')
     return (
       <>
         <svg height={height} width={width}>
@@ -267,7 +268,7 @@ export class HybirdForceGraph extends Component {
         <FloatRight>
           <div>
             <div>SelectedNode:</div>
-            <div>{curSel}</div>
+            <div>{selNode}</div>
             <div>---------------</div>
           </div>
           {data &&

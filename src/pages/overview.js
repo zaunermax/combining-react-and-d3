@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import * as jz from 'jeezy'
-import BarChart from 'components/pureD3/barChart'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { LINK_TYPES, HybirdForceGraph } from 'components/hybrid/forceGraph'
 
@@ -50,23 +49,14 @@ export default class extends Component {
     forceData: [],
     forceLinks: [],
     tmpForceLinks: null,
-    data: [5, 10, 1, 3],
     width: 500,
     forceLinkToggle: true,
     linkType: LINK_TYPES.STRAIGHT,
+    selNode: '',
   }
 
   componentDidMount() {
     this.updateForce()
-  }
-
-  onClick = () => {
-    this.setState(() => {
-      const newData = []
-      const length = jz.num.randBetween(1, 10)
-      for (let i = 0; i < length; i++) newData.push(jz.num.randBetween(0, 15))
-      return { data: newData }
-    })
   }
 
   updateForce = () => {
@@ -104,38 +94,43 @@ export default class extends Component {
     })
   }
 
-  onShuffleIdxes = () => {
+  onShuffleIdxes = () =>
     this.setState(({ forceData }) => ({ forceData: jz.arr.shuffle(forceData).concat([]) }))
-  }
 
-  onToggleLinks = () => {
+  onToggleLinks = () =>
     this.setState(({ forceLinkToggle, forceLinks, tmpForceLinks }) => ({
       forceLinkToggle: !forceLinkToggle,
       tmpForceLinks: forceLinkToggle ? forceLinks : null,
       forceLinks: forceLinkToggle ? null : tmpForceLinks,
     }))
-  }
 
-  onRandomizeLinks = () => {
+  onRandomizeLinks = () =>
     this.setState(({ forceLinks, tmpForceLinks, forceData }) => ({
       forceLinks: forceLinks ? randomizeLinks(forceData) : null,
       tmpForceLinks: tmpForceLinks ? randomizeLinks(forceData) : null,
     }))
-  }
 
-  onToggleLinkType = () => {
+  onToggleLinkType = () =>
     this.setState(({ linkType }) => ({
       linkType: linkType === LINK_TYPES.STRAIGHT ? LINK_TYPES.CURVED : LINK_TYPES.STRAIGHT,
     }))
-  }
+
+  selectNode = (name) => this.setState({ selNode: name })
 
   render() {
-    const { width, forceData, forceLinks, data, linkType } = this.state
+    const { width, forceData, forceLinks, linkType, selNode } = this.state
 
     return (
       <div>
         <PureD3ForceGraph data={forceData} width={width} />
-        <HybirdForceGraph data={forceData} links={forceLinks} width={width} linkType={linkType} />
+        <HybirdForceGraph
+          data={forceData}
+          links={forceLinks}
+          width={width}
+          linkType={linkType}
+          selNode={selNode}
+          selectNode={this.selectNode}
+        />
         <div>
           <button onClick={this.onUpdateForce}>update force</button>
           <button onClick={this.onUpdateRandomData}>update rnd data</button>
@@ -144,10 +139,6 @@ export default class extends Component {
           <button onClick={this.onToggleLinks}>toggle links</button>
           <button onClick={this.onRandomizeLinks}>randomize links</button>
           <button onClick={this.onToggleLinkType}>toggle link type</button>
-        </div>
-        <BarChart data={data} height={500} width={500} />
-        <div>
-          <button onClick={this.onClick}>click me!</button>
         </div>
       </div>
     )
