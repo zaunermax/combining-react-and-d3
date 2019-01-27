@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import BarChart from '../components/pureD3/barChart'
-import { PureD3ForceGraph } from '../components/pureD3/forceGraph'
 import * as jz from 'jeezy'
-import { LINK_TYPES, HybirdForceGraph } from '../components/hybrid/forceGraph'
+import BarChart from 'components/pureD3/barChart'
+import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
+import { LINK_TYPES, HybirdForceGraph } from 'components/hybrid/forceGraph'
 
 let alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -45,7 +45,7 @@ const randomizeLinks = (data = []) => {
   return links
 }
 
-class Test extends Component {
+export default class extends Component {
   state = {
     forceData: [],
     forceLinks: [],
@@ -153,5 +153,3 @@ class Test extends Component {
     )
   }
 }
-
-export default Test
