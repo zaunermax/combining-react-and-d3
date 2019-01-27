@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import BarChart from 'components/pureD3/barChart'
-import { getOnClickHandler, getRndChartData } from 'lib/barChart'
+import { getOnClickHandler, getRndChartData } from 'lib/barChartService'
 
 export default () => {
   const [data, setData] = useState(getRndChartData())

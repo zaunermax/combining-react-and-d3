@@ -75,11 +75,9 @@ export default class extends Component {
     this.updateForce()
   }
 
-  onChangeWidth = () => {
-    this.setState(({ width }) => ({ width: width === 500 ? 400 : 500 }))
-  }
+  onChangeWidth = () => this.setState(({ width }) => ({ width: width === 500 ? 400 : 500 }))
 
-  onUpdateRandomData = () => {
+  onUpdateRandomData = () =>
     this.setState(({ forceData }) => {
       const { length } = forceData
       const rndIdx = jz.num.randBetween(0, length - 1)
@@ -92,7 +90,6 @@ export default class extends Component {
       // concat only because of PureComponent todo: use seamless-immutable
       return { forceData: forceData.concat([]) }
     })
-  }
 
   onShuffleIdxes = () =>
     this.setState(({ forceData }) => ({ forceData: jz.arr.shuffle(forceData).concat([]) }))

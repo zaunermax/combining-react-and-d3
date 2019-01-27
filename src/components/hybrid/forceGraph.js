@@ -103,8 +103,11 @@ export class HybirdForceGraph extends Component {
     return { data: newData, links: newLinks }
   }
 
-  shouldComponentUpdate(nextProps) {
-    return Object.keys(nextProps).some((key) => nextProps[key] !== this.props[key])
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      Object.keys(nextProps).some((key) => nextProps[key] !== this.props[key]) ||
+      Object.keys(nextState).some((key) => nextState[key] !== this.state[key])
+    )
   }
 
   componentDidMount() {
