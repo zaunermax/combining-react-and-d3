@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component, createRef } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components/macro'
-import { NodeGroup } from 'react-move'
 import {
   forceCenter,
   forceCollide,
@@ -14,14 +13,25 @@ import {
 import { select, event } from 'd3-selection'
 import { drag } from 'd3-drag'
 import { line, curveBasis } from 'd3-shape'
+import { NodeGroup } from 'components/app/reactMove'
+import { easeCubic } from 'd3-ease'
+
+const ANIMATION_DURATION = 750
 
 const G = styled.g`
   stroke: #ffffff;
   stroke-width: 1.5px;
 `
 
-const FloatRight = styled.div`
-  float: right;
+const Container = styled.span`
+  position: relative;
+  display: inline-block;
+`
+
+const SelectedContainer = styled.div`
+  position: absolute;
+  right: 0;
+  top: 0;
 `
 
 const getCurvedLinkPath = ({ source: { x: sx, y: sy }, target: { x: tx, y: ty } }) => {
@@ -85,6 +95,12 @@ export class HybirdForceGraph extends Component {
     linkType: LINK_TYPES.STRAIGHT,
   }
 
+  constructor(props) {
+    super(props)
+    this.ref = createRef()
+  }
+
+  // TODO: create a hoc out of this
   // I added this to prevent the outside data from being mutated
   static getDerivedStateFromProps({ data, links }, { data: stateData }) {
     const newData = data.map(({ name, size }) => {
@@ -175,7 +191,7 @@ export class HybirdForceGraph extends Component {
   }
 
   refreshGraph = () => {
-    const selection = select(this.ref)
+    const selection = select(this.ref.current)
     this.nodeSel = selection.selectAll('circle')
     this.linkSel = selection.selectAll('path')
 
@@ -198,7 +214,7 @@ export class HybirdForceGraph extends Component {
 
     // the dragging should be handled by d3
     // position is a prop that is tracked by d3 NOT react
-    select(this.ref)
+    select(this.ref.current)
       .selectAll('circle')
       .call(
         drag()
@@ -214,18 +230,16 @@ export class HybirdForceGraph extends Component {
     console.log('name', name)
   }
 
-  setRef = (ref) => (this.ref = ref)
-
   start = ({ size }) => ({
     r: size,
     fill: '#45b29d',
-    timing: { duration: 750 },
+    timing: { duration: ANIMATION_DURATION },
   })
 
   update = ({ size }) => ({
     r: [size],
     fill: '#3a403d',
-    timing: { duration: 750 },
+    timing: { duration: ANIMATION_DURATION },
   })
 
   leave = ({ name }) => {
@@ -233,62 +247,46 @@ export class HybirdForceGraph extends Component {
     return {
       r: [0],
       fill: '#b26745',
-      timing: { duration: 750 },
+      timing: { duration: ANIMATION_DURATION, ease: easeCubic },
     }
   }
 
   render() {
     const { height, width, selNode } = this.props
     const { data, links } = this.state
-    console.log('rerender force graph')
+
     return (
-      <>
+      <Container>
         <svg height={height} width={width}>
-          <g transform={`translate(${width / 2},${height / 2})`}>
-            <G ref={this.setRef}>
-              {links &&
-                links.map(({ source: { name: s }, target: { name: t } }) => (
-                  <path key={s + t} id={s + t} stroke={'#45b29d'} fill={'none'} />
-                ))}
-              <NodeGroup
-                data={data}
-                keyAccessor={(d) => d.name}
-                start={this.start}
-                update={this.update}
-                leave={this.leave}
-              >
-                {(nodes) => (
-                  <>
-                    {nodes.map(({ key, state: { fill, r } }) => (
-                      <circle key={key} id={key} onClick={this.logNode(key)} fill={fill} r={r} />
-                    ))}
-                  </>
-                )}
-              </NodeGroup>
-            </G>
-          </g>
+          <G ref={this.ref} transform={`translate(${width / 2},${height / 2})`}>
+            {links &&
+              links.map(({ source: { name: s }, target: { name: t } }) => (
+                <path key={s + t} id={s + t} stroke={'#45b29d'} fill={'none'} />
+              ))}
+            <NodeGroup
+              data={data}
+              keyAccessor={(d) => d.name}
+              start={this.start}
+              update={this.update}
+              leave={this.leave}
+            >
+              {(nodes) => (
+                <>
+                  {nodes.map(({ key, state: { fill, r } }) => (
+                    <circle key={key} id={key} onClick={this.logNode(key)} fill={fill} r={r} />
+                  ))}
+                </>
+              )}
+            </NodeGroup>
+          </G>
         </svg>
-        <FloatRight>
+        <SelectedContainer>
           <div>
             <div>SelectedNode:</div>
             <div>{selNode}</div>
-            <div>---------------</div>
           </div>
-          {data &&
-            data.map(({ name }, idx) => (
-              <div key={name}>
-                [{idx}]: {name}
-              </div>
-            ))}
-          <div>---------------</div>
-          {links &&
-            links.map(({ source: { name: s }, target: { name: t } }) => (
-              <div key={s + t}>
-                [{s}] -&gt; [{t}]
-              </div>
-            ))}
-        </FloatRight>
-      </>
+        </SelectedContainer>
+      </Container>
     )
   }
 }

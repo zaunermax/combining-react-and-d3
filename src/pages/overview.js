@@ -2,56 +2,19 @@ import React, { Component } from 'react'
 import * as jz from 'jeezy'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { LINK_TYPES, HybirdForceGraph } from 'components/hybrid/forceGraph'
+import { randomizeData, randomizeLinks } from 'lib/rndDataService'
 
-let alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
-
-const randomizeData = () => {
-  let d0 = jz.arr.shuffle(alphabet)
-  let d1 = []
-  let d2 = []
-
-  for (let i = 0; i < jz.num.randBetween(1, alphabet.length); i++) {
-    d1.push(d0[i])
-  }
-
-  d1.forEach((d) => d2.push({ name: d, size: jz.num.randBetween(5, 50) }))
-
-  return d2
-}
-
-const findSameLink = (key) => ({ source: { name: s }, target: { name: t } }) =>
-  s + t === key || t + s === key
-
-const randomizeLinks = (data = []) => {
-  const { length } = data
-  const nrOfLinks = jz.num.randBetween(1, length)
-  const links = []
-
-  for (let i = 0; i < nrOfLinks; i++) {
-    const firstIdx = jz.num.randBetween(0, length - 1)
-    const secondIdx = jz.num.randBetween(0, length - 1)
-
-    const d1 = data[firstIdx]
-    const d2 = data[secondIdx]
-
-    if (firstIdx !== secondIdx && !links.find(findSameLink(d1.name + d2.name)))
-      links.push({
-        source: data[firstIdx],
-        target: data[secondIdx],
-      })
-  }
-
-  return links
-}
+const STD_WIDTH = 800
+const STD_HEIGHT = 800
 
 export default class extends Component {
   state = {
     forceData: [],
     forceLinks: [],
     tmpForceLinks: null,
-    width: 500,
-    forceLinkToggle: true,
-    linkType: LINK_TYPES.STRAIGHT,
+    width: STD_WIDTH,
+    forceLinkToggle: false,
+    linkType: LINK_TYPES.CURVED,
     selNode: '',
   }
 
@@ -59,7 +22,7 @@ export default class extends Component {
     this.updateForce()
   }
 
-  updateForce = () => {
+  updateForce = () =>
     this.setState(({ forceLinkToggle }) => {
       const forceData = randomizeData()
       const newLinks = randomizeLinks(forceData)
@@ -69,13 +32,11 @@ export default class extends Component {
         tmpForceLinks: forceLinkToggle ? null : newLinks,
       }
     })
-  }
 
-  onUpdateForce = () => {
-    this.updateForce()
-  }
+  onUpdateForce = () => this.updateForce()
 
-  onChangeWidth = () => this.setState(({ width }) => ({ width: width === 500 ? 400 : 500 }))
+  onChangeWidth = () =>
+    this.setState(({ width }) => ({ width: width === STD_WIDTH ? STD_WIDTH / 2 : STD_WIDTH }))
 
   onUpdateRandomData = () =>
     this.setState(({ forceData }) => {
@@ -85,9 +46,9 @@ export default class extends Component {
       const {
         [rndIdx]: { size },
       } = forceData
-      console.log('test', forceData[rndIdx])
+
       forceData[rndIdx].size = (plusOrMinus < 1 && size > 10) || size > 60 ? size - 10 : size + 10
-      // concat only because of PureComponent todo: use seamless-immutable
+
       return { forceData: forceData.concat([]) }
     })
 
@@ -114,16 +75,22 @@ export default class extends Component {
 
   selectNode = (name) => this.setState({ selNode: name })
 
+  onCheckData = () => {
+    console.log('force data', this.state.forceData)
+    console.log('force links', this.state.forceLinks)
+  }
+
   render() {
     const { width, forceData, forceLinks, linkType, selNode } = this.state
 
     return (
       <div>
-        <PureD3ForceGraph data={forceData} width={width} />
+        <PureD3ForceGraph data={forceData} links={forceLinks} width={width} height={STD_HEIGHT} />
         <HybirdForceGraph
           data={forceData}
           links={forceLinks}
           width={width}
+          height={STD_HEIGHT}
           linkType={linkType}
           selNode={selNode}
           selectNode={this.selectNode}
@@ -136,6 +103,7 @@ export default class extends Component {
           <button onClick={this.onToggleLinks}>toggle links</button>
           <button onClick={this.onRandomizeLinks}>randomize links</button>
           <button onClick={this.onToggleLinkType}>toggle link type</button>
+          <button onClick={this.onCheckData}>check data</button>
         </div>
       </div>
     )

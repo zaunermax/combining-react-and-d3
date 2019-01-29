@@ -4,7 +4,11 @@ import { forceManyBody, forceX, forceY, forceCenter, forceSimulation, forceColli
 import { select } from 'd3-selection'
 import { transition } from 'd3-transition'
 
+const findName = (name) => ({ name: n }) => n === name
+
 export class PureD3ForceGraph extends Component {
+  state = {}
+
   static propTypes = {
     data: PropTypes.array,
     width: PropTypes.number,
@@ -19,6 +23,24 @@ export class PureD3ForceGraph extends Component {
 
   componentDidMount() {
     this.initGraph()
+  }
+
+  // I added this to prevent the outside data from being mutated
+  static getDerivedStateFromProps({ data, links }, { data: stateData }) {
+    const newData = data.map(({ name, size }) => {
+      const existing = stateData.find(({ name: n }) => name === n)
+      return existing ? Object.assign(existing, { size }) : { name, size }
+    })
+
+    const newLinks = links
+      ? links.map(({ source: { name: sName }, target: { name: tName } }) => {
+          const source = newData.find(findName(sName))
+          const target = newData.find(findName(tName))
+          return { source, target }
+        })
+      : []
+
+    return { data: newData, links: newLinks }
   }
 
   componentDidUpdate({ width, height }) {
@@ -39,7 +61,8 @@ export class PureD3ForceGraph extends Component {
   }
 
   initGraph = () => {
-    const { data, width, height } = this.props
+    const { width, height } = this.props
+    const { data } = this.state
 
     // save the simulation in component so it is updatable
     this.simulation = forceSimulation(data)
@@ -64,7 +87,7 @@ export class PureD3ForceGraph extends Component {
   }
 
   updateGraph = () => {
-    const { data } = this.props
+    const { data } = this.state
 
     // transition
     let t = transition().duration(750)
