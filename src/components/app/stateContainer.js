@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import * as jz from 'jeezy'
-import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
-import { HybirdForceGraph } from 'components/hybrid/forceGraph'
 import { randomizeData, randomizeLinks } from 'lib/rndDataService'
 import { LINK_TYPES } from 'lib/d3/linkPathService'
 
 const STD_WIDTH = 900
 const STD_HEIGHT = 900
 
-export default class extends Component {
+export class GraphContainer extends Component {
   state = {
     data: [],
     links: [],
@@ -82,17 +80,11 @@ export default class extends Component {
 
   render() {
     const { width, data, links, linkType, selNode } = this.state
+    const { component: C } = this.props
 
     return (
       <div>
-        <PureD3ForceGraph
-          data={data}
-          links={links}
-          width={width}
-          height={STD_HEIGHT}
-          linkType={linkType}
-        />
-        <HybirdForceGraph
+        <C
           data={data}
           links={links}
           width={width}

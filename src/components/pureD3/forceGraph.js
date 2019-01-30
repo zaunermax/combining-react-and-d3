@@ -1,8 +1,23 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { forceManyBody, forceX, forceY, forceCenter, forceSimulation, forceCollide } from 'd3-force'
-import { select } from 'd3-selection'
+import {
+  forceManyBody,
+  forceX,
+  forceY,
+  forceCenter,
+  forceSimulation,
+  forceCollide,
+  forceLink,
+} from 'd3-force'
+import { event, select } from 'd3-selection'
 import { transition } from 'd3-transition'
+import { drag } from 'd3-drag'
+import {
+  getCurvedLinkPath,
+  getStraightLinkPath,
+  LINK_TYPES,
+  LinkTypePropType,
+} from 'lib/d3/linkPathService'
 
 const findName = (name) => ({ name: n }) => n === name
 
@@ -11,14 +26,20 @@ export class PureD3ForceGraph extends Component {
 
   static propTypes = {
     data: PropTypes.array,
+    links: PropTypes.array,
     width: PropTypes.number,
     height: PropTypes.number,
+    linkType: LinkTypePropType,
+    selNode: PropTypes.string,
+    selectNode: PropTypes.func,
   }
 
   static defaultProps = {
     data: [],
+    links: [],
     width: 500,
     height: 500,
+    linkType: LINK_TYPES.STRAIGHT,
   }
 
   componentDidMount() {
@@ -58,6 +79,24 @@ export class PureD3ForceGraph extends Component {
 
   ticked = () => {
     this.node.attr('cx', ({ x }) => x).attr('cy', ({ y }) => y)
+    this.link.attr('d', (d) =>
+      this.props.linkType === LINK_TYPES.CURVED ? getCurvedLinkPath(d) : getStraightLinkPath(d),
+    )
+  }
+
+  onDragStarted = (d) => {
+    d.fx = d.x
+    d.fy = d.y
+  }
+
+  onDrag = (d) => {
+    d.fx = event.x
+    d.fy = event.y
+  }
+
+  onDragEnded = (d) => {
+    d.fx = null
+    d.fy = null
   }
 
   initGraph = () => {
@@ -77,22 +116,30 @@ export class PureD3ForceGraph extends Component {
 
     let g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
-    this.node = g
-      .append('g')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 1.5)
-      .selectAll('.node')
+    this.link = g.append('g').selectAll('path')
+    this.node = g.append('g').selectAll('.node')
 
     this.updateGraph()
   }
 
   updateGraph = () => {
-    const { data } = this.state
+    const { data, links } = this.state
 
     // transition
     let t = transition().duration(750)
     // Apply the general update pattern to the nodes.
     this.node = this.node.data(data, ({ name }) => name)
+    this.link = this.link.data(links, ({ source: { name: s }, target: { name: t } }) => s + t)
+
+    this.link.exit().remove()
+
+    this.link = this.link
+      .enter()
+      .append('path')
+      .attr('stroke', '#45b29d')
+      .attr('fill', 'none')
+      .attr('id', ({ source: { name: s }, target: { name: t } }) => s + t)
+      .merge(this.link)
 
     this.node
       .exit()
@@ -111,15 +158,32 @@ export class PureD3ForceGraph extends Component {
       .append('circle')
       .style('fill', '#45b29d')
       .attr('r', ({ size }) => size)
+      .attr('id', ({ name }) => name)
       .merge(this.node)
 
     // Update and restart the simulation.
-    this.simulation.nodes(data).force(
-      'collide',
-      forceCollide()
-        .strength(1)
-        .radius(({ size }) => size + 10)
-        .iterations(1),
+    this.simulation
+      .nodes(data)
+      .force(
+        'collide',
+        forceCollide()
+          .strength(1)
+          .radius(({ size }) => size + 10)
+          .iterations(1),
+      )
+      .force(
+        'link',
+        forceLink(this.state.links)
+          .distance(({ source: { size: s }, target: { size: t } }) => (s > t ? s + 10 : t + 10))
+          .strength(0.1)
+          .id((d) => d.name),
+      )
+
+    this.node.call(
+      drag()
+        .on('start', this.onDragStarted)
+        .on('drag', this.onDrag)
+        .on('end', this.onDragEnded),
     )
   }
 

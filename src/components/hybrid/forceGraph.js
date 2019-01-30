@@ -12,9 +12,14 @@ import {
 } from 'd3-force'
 import { select, event } from 'd3-selection'
 import { drag } from 'd3-drag'
-import { line, curveBasis } from 'd3-shape'
 import { NodeGroup } from 'components/app/reactMove'
 import { easeCubic } from 'd3-ease'
+import {
+  getCurvedLinkPath,
+  getStraightLinkPath,
+  LINK_TYPES,
+  LinkTypePropType,
+} from 'lib/d3/linkPathService'
 
 const ANIMATION_DURATION = 750
 
@@ -34,45 +39,7 @@ const SelectedContainer = styled.div`
   top: 0;
 `
 
-const getCurvedLinkPath = ({ source: { x: sx, y: sy }, target: { x: tx, y: ty } }) => {
-  const offset = 50
-
-  const midpoint_x = (sx + tx) / 2
-  const midpoint_y = (sy + ty) / 2
-
-  const dx = tx - sx
-  const dy = ty - sy
-
-  const normalise = Math.sqrt(dx * dx + dy * dy)
-
-  const offSetX = midpoint_x + offset * (dy / normalise)
-  const offSetY = midpoint_y - offset * (dx / normalise)
-
-  return `M${sx},${sy}S${offSetX},${offSetY} ${tx},${ty}`
-}
-
-const getStraightLinkPath = ({ source: { x: sx, y: sy }, target: { x: tx, y: ty } }) =>
-  `M${sx},${sy}L${tx},${ty}`
-
-const getSmoothLinkPath = ({
-  direction,
-  source: { x: sx, y: sy, size: sr },
-  target: { x: tx, y: ty, size: tr },
-}) =>
-  line().curve(curveBasis)([
-    [sx, sy],
-    [sx + Math.sin(direction) * sr * 2, sy + Math.cos(direction) * sr * 2],
-    [tx + Math.sin(direction - Math.PI) * tr * 2, ty + Math.cos(direction - Math.PI) * tr * 2],
-    [tx, ty],
-  ])
-
 const findName = (name) => ({ name: n }) => n === name
-
-export const LINK_TYPES = {
-  STRAIGHT: 'STRAIGHT',
-  SMOOTH: 'SMOOTH',
-  CURVED: 'CURVED',
-}
 
 export class HybirdForceGraph extends Component {
   state = { curSel: 'nix' }
@@ -82,7 +49,7 @@ export class HybirdForceGraph extends Component {
     links: PropTypes.array,
     width: PropTypes.number,
     height: PropTypes.number,
-    linkType: PropTypes.oneOf(Object.keys(LINK_TYPES).map((key) => LINK_TYPES[key])),
+    linkType: LinkTypePropType,
     selNode: PropTypes.string,
     selectNode: PropTypes.func,
   }
@@ -134,16 +101,8 @@ export class HybirdForceGraph extends Component {
     this.refreshGraph()
   }
 
-  getLinkPath = (d) => {
-    switch (this.props.linkType) {
-      case LINK_TYPES.CURVED:
-        return getCurvedLinkPath(d)
-      case LINK_TYPES.SMOOTH:
-        return getSmoothLinkPath(d)
-      default:
-        return getStraightLinkPath(d)
-    }
-  }
+  getLinkPath = (d) =>
+    this.props.linkType === LINK_TYPES.CURVED ? getCurvedLinkPath(d) : getStraightLinkPath(d)
 
   ticked = () => {
     const { links, data } = this.state
@@ -192,6 +151,7 @@ export class HybirdForceGraph extends Component {
 
   refreshGraph = () => {
     const selection = select(this.ref.current)
+
     this.nodeSel = selection.selectAll('circle')
     this.linkSel = selection.selectAll('path')
 
@@ -273,7 +233,13 @@ export class HybirdForceGraph extends Component {
               {(nodes) => (
                 <>
                   {nodes.map(({ key, state: { fill, r } }) => (
-                    <circle key={key} id={key} onClick={this.logNode(key)} fill={fill} r={r} />
+                    <circle
+                      key={key}
+                      id={key}
+                      onClick={this.logNode(key)}
+                      fill={key === selNode ? 'red' : fill}
+                      r={r}
+                    />
                   ))}
                 </>
               )}
