@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import * as jz from 'jeezy'
 import { randomizeData, randomizeLinks } from 'lib/rndDataService'
-import { LINK_TYPES } from 'lib/d3/linkPathService'
+import { LINK_TYPES } from 'lib/d3/linkPath'
 
 const STD_WIDTH = 900
 const STD_HEIGHT = 900

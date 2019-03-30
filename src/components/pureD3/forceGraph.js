@@ -17,7 +17,7 @@ import {
   getStraightLinkPath,
   LINK_TYPES,
   LinkTypePropType,
-} from 'lib/d3/linkPathService'
+} from 'lib/d3/linkPath'
 
 const findName = (name) => ({ name: n }) => n === name
 

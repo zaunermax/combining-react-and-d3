@@ -19,7 +19,7 @@ import {
   getStraightLinkPath,
   LINK_TYPES,
   LinkTypePropType,
-} from 'lib/d3/linkPathService'
+} from 'lib/d3/linkPath'
 
 const ANIMATION_DURATION = 750
 
@@ -41,7 +41,7 @@ const SelectedContainer = styled.div`
 
 const findName = (name) => ({ name: n }) => n === name
 
-export class HybirdForceGraph extends Component {
+export class HybridForceGraph extends Component {
   state = { curSel: 'nix' }
 
   static propTypes = {
