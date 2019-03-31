@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 const pathStyles = {
   fill: 'none',
-  strokeWidth: 1,
-  stroke: 'rgba(255, 255, 255, 0.5)',
+  strokeWidth: 1.5,
+  stroke: '#45b29d',
 }
 
 export const ForceLink = ({ path }) => {

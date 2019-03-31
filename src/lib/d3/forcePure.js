@@ -10,7 +10,7 @@ import {
 } from 'd3-force'
 import { event } from 'd3-selection'
 import { getCurvedLinkPath } from 'lib/d3/linkPath'
-import { pipe } from 'lib/fpUtil'
+import { pipe, switchCase } from 'lib/fpUtil'
 
 const onDragStarted = (d) => {
   d.fx = d.x
@@ -27,21 +27,41 @@ const onDragEnded = (d) => {
   d.fy = null
 }
 
-// Util
+// -------------- Util -------------- //
 
 export const nodeId = ({ index }) => index
 
 export const linkId = (link) => {
   const { source, target } = link
-  const sourceId = source.id || source
-  const targetId = target.id || target
+  const sourceId = source.index || source
+  const targetId = target.index || target
   return `${sourceId}=>${targetId}`
 }
 
-// Apply options
+export const extractSimOptions = ({ nodesRef, props }, overrideProps = null) => {
+  const { data: nodes, links, forceOptions } = overrideProps || props
+  return { nodes: nodes || [], links: links || [], nodesRef, ...forceOptions }
+}
 
-const applyGeneralForce = (args) => {
-  const { simulation } = args
+export const extractSimUpdateParams = (componentInstance, overrideProps = null) => ({
+  simulation: componentInstance.simulation,
+  options: extractSimOptions(componentInstance, overrideProps),
+})
+
+const calcLinkDist = ({ source: { size: s }, target: { size: t } }) => (s > t ? s + 10 : t + 10)
+
+// apply functions do not have to return args anymore
+const applyArgs = (fn) => (args) => {
+  fn(args)
+  return args
+}
+
+// apply the arg returning function to all appliers that get passed into the pipe operator
+const pipeAppliers = (...fns) => pipe(...fns.map(applyArgs))
+
+// -------------- Apply Options -------------- //
+
+const applyGeneralForce = ({ simulation }) => {
   if (!simulation.force('center')) {
     simulation
       .force('center', forceCenter())
@@ -49,76 +69,67 @@ const applyGeneralForce = (args) => {
       .force('forceX', forceX().strength(0.1))
       .force('forceY', forceY().strength(0.1))
   }
-  return args
 }
 
-const applyCollisionForce = (args) => {
-  const {
-    simulation,
-    options: { radiusMultiplier = 1.5, strength = 1 },
-  } = args
-
+const applyCollisionForce = ({ simulation, options: { radiusMultiplier, strength } }) => {
   if (!simulation.force('collide')) simulation.force('collide', forceCollide())
 
-  if (simulation.radiusMultiplier !== radiusMultiplier) {
+  if (radiusMultiplier && simulation.radiusMultiplier !== radiusMultiplier) {
     simulation.radiusMultiplier = radiusMultiplier
     simulation.force('collide').radius(({ size }) => size * radiusMultiplier)
   }
 
   if (!simulation.strength) simulation.strength = {}
 
-  if (simulation.strength.collide !== strength) {
+  if (strength && simulation.strength.collide !== strength) {
     simulation.strength.collide = strength
     simulation.force('collide').strength(strength)
   }
-
-  return args
 }
 
-const applyNewNodes = (args) => {
-  const {
-    simulation,
-    options: { nodes },
-  } = args
+const applyNewNodes = ({ simulation, options: { nodes } }) => simulation.nodes(nodes)
 
-  simulation.nodes(nodes)
-
-  // reheat the simulation
-  simulation.alpha(1).restart()
-  simulation.alphaMin(0.001)
-
-  return args
-}
-
-const applyLinkForce = (args) => {
-  const {
-    simulation,
-    options: { links },
-  } = args
-
+const applyLinkForce = ({ simulation, options: { links } }) => {
   if (!simulation.force('link')) {
     const fLink = forceLink()
     fLink.distance(250)
+    fLink.strength(0.1)
+    fLink.distance(calcLinkDist)
     fLink.id(nodeId)
     simulation.force('link', fLink)
   }
 
   simulation.force('link').links(links)
-
-  return args
 }
 
-// Simulation
+const applySimulationReheating = ({ simulation }) => {
+  simulation.alpha(1).restart()
+  simulation.alphaMin(0.001)
+}
 
-const updateSimulation = pipe(
+// -------------- Simulation -------------- //
+
+export const SIMULATION_TYPE = {
+  PURE_REACT: 'pureReact',
+  PURE_D3: 'pureD3',
+  REACT_D3_HYBRID: 'reactD3Hybrid',
+}
+
+const pureD3Updater = pipeAppliers(
   applyGeneralForce,
   applyNewNodes,
   applyLinkForce,
   applyCollisionForce,
+  applySimulationReheating,
 )
+
+const getUpdaterFunction = switchCase({
+  [SIMULATION_TYPE.PURE_REACT]: pureD3Updater,
+})(null)
 
 export const buildForceSimulation = (options) => {
   const simulation = forceSimulation()
+  const updateSimulation = getUpdaterFunction(options.type)
   updateSimulation({ simulation, options })
   return { simulation, updateSimulation }
 }

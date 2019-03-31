@@ -3,10 +3,13 @@ import PropTypes from 'prop-types'
 import { LINK_TYPES, LinkTypePropType } from 'lib/d3/linkPath'
 import {
   buildForceSimulation,
+  extractSimOptions,
+  extractSimUpdateParams,
   getLinkPaths,
   getNodePositions,
   linkId,
   nodeId,
+  SIMULATION_TYPE,
 } from 'lib/d3/forcePure'
 import { shallowCompare } from 'lib/util/shallow'
 import styled from 'styled-components/macro'
@@ -36,6 +39,7 @@ export class PureReactForceGraph extends Component {
     linkType: LinkTypePropType,
     selNode: PropTypes.string,
     selectNode: PropTypes.func,
+    forceOptions: PropTypes.object,
   }
 
   static defaultProps = {
@@ -53,8 +57,8 @@ export class PureReactForceGraph extends Component {
     super(props)
     this.initSimulation()
     this.startSimulationTicks()
-    this.links = createRef()
-    this.nodes = createRef()
+    this.linksRef = createRef()
+    this.nodesRef = createRef()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -91,8 +95,10 @@ export class PureReactForceGraph extends Component {
   // Simulation
 
   initSimulation = () => {
-    const { data: nodes, links } = this.props
-    const { simulation, updateSimulation } = buildForceSimulation({ nodes, links })
+    const { simulation, updateSimulation } = buildForceSimulation({
+      type: SIMULATION_TYPE.PURE_REACT,
+      ...extractSimOptions(this),
+    })
     this.updateSimulation = updateSimulation
     this.simulation = simulation
   }
@@ -101,17 +107,12 @@ export class PureReactForceGraph extends Component {
     const propsChanged = shallowCompare(this.props, nextProps)
     const stateChanged = shallowCompare(this.state, nextState)
     const shouldUpdate = propsChanged || stateChanged
-    if (propsChanged) this.handleSimulationUpdate(nextProps)
+    propsChanged && this.handleSimulationUpdate(nextProps)
     return shouldUpdate
   }
 
-  handleSimulationUpdate = (props = this.props) => {
-    const { data: nodes, links } = props
-    if (nodes)
-      this.updateSimulation({
-        simulation: this.simulation,
-        options: { nodes: nodes || [], links: links || [] },
-      })
+  handleSimulationUpdate = (overrideProps) => {
+    this.updateSimulation(extractSimUpdateParams(this, overrideProps))
   }
 
   updatePositions = () => {
@@ -129,7 +130,7 @@ export class PureReactForceGraph extends Component {
       <Container>
         <svg height={height} width={width}>
           <G transform={`translate(${width / 2},${height / 2})`}>
-            <g ref={this.links} className={'links'}>
+            <g ref={this.linksRef} className={'links'}>
               {links &&
                 links.map((link) => {
                   const path = this.getLinkPath(link)
@@ -138,7 +139,7 @@ export class PureReactForceGraph extends Component {
                   ) : null
                 })}
             </g>
-            <g ref={this.nodes} className={'nodes'}>
+            <g ref={this.nodesRef} className={'nodes'}>
               {nodes &&
                 nodes.map((node) => {
                   const pos = this.getNodePosition(node)

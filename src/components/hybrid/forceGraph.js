@@ -33,12 +33,6 @@ const Container = styled.span`
   display: inline-block;
 `
 
-const SelectedContainer = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-`
-
 const findName = (name) => ({ name: n }) => n === name
 
 export class HybridForceGraph extends Component {
@@ -128,23 +122,26 @@ export class HybridForceGraph extends Component {
       .force('forceX', forceX().strength(0.1))
       .force('forceY', forceY().strength(0.1))
       .force('center', forceCenter())
-      .alphaTarget(1)
       .on('tick', this.ticked)
 
     this.refreshGraph()
   }
 
   onDragStarted = (d) => {
+    this.simulation.alpha(0.3).restart()
     d.fx = d.x
     d.fy = d.y
   }
 
   onDrag = (d) => {
+    this.simulation.alpha(0.3).restart()
     d.fx = event.x
     d.fy = event.y
   }
 
   onDragEnded = (d) => {
+    this.simulation.alpha(0.3).restart()
+    this.simulation.alphaMin(0.001)
     d.fx = null
     d.fy = null
   }
@@ -171,6 +168,9 @@ export class HybridForceGraph extends Component {
           .strength(0.1)
           .id((d) => d.name),
       )
+
+    this.simulation.alpha(1).restart()
+    this.simulation.alphaMin(0.001)
 
     // the dragging should be handled by d3
     // position is a prop that is tracked by d3 NOT react
@@ -202,14 +202,11 @@ export class HybridForceGraph extends Component {
     timing: { duration: ANIMATION_DURATION },
   })
 
-  leave = ({ name }) => {
-    console.log('leaving', name)
-    return {
-      r: [0],
-      fill: '#b26745',
-      timing: { duration: ANIMATION_DURATION, ease: easeCubic },
-    }
-  }
+  leave = () => ({
+    r: [0],
+    fill: '#b26745',
+    timing: { duration: ANIMATION_DURATION, ease: easeCubic },
+  })
 
   render() {
     const { height, width, selNode } = this.props
@@ -246,12 +243,6 @@ export class HybridForceGraph extends Component {
             </NodeGroup>
           </G>
         </svg>
-        <SelectedContainer>
-          <div>
-            <div>SelectedNode:</div>
-            <div>{selNode}</div>
-          </div>
-        </SelectedContainer>
       </Container>
     )
   }

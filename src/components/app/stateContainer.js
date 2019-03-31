@@ -6,6 +6,11 @@ import { LINK_TYPES } from 'lib/d3/linkPath'
 const STD_WIDTH = 900
 const STD_HEIGHT = 900
 
+const forceOptions = {
+  radiusMultiplier: 1.2,
+  strength: 1,
+}
+
 export class GraphContainer extends Component {
   state = {
     data: [],
@@ -84,15 +89,6 @@ export class GraphContainer extends Component {
 
     return (
       <div>
-        <C
-          data={data}
-          links={links}
-          width={width}
-          height={STD_HEIGHT}
-          linkType={linkType}
-          selNode={selNode}
-          selectNode={this.selectNode}
-        />
         <div>
           <button onClick={this.onUpdateForce}>update force</button>
           <button onClick={this.onUpdateRandomData}>update rnd data</button>
@@ -103,6 +99,16 @@ export class GraphContainer extends Component {
           <button onClick={this.onToggleLinkType}>toggle link type</button>
           <button onClick={this.onCheckData}>check data</button>
         </div>
+        <C
+          data={data}
+          links={links}
+          width={width}
+          height={STD_HEIGHT}
+          linkType={linkType}
+          selNode={selNode}
+          selectNode={this.selectNode}
+          forceOptions={forceOptions}
+        />
       </div>
     )
   }
