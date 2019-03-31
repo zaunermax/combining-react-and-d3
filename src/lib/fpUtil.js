@@ -1,7 +1,5 @@
 /* eslint-disable no-sequences */
 
-import React from 'react'
-
 export const curry = (fn) => (...args) => fn.bind(null, ...args)
 
 export const map = curry((fn, arr) => arr.map(fn))
