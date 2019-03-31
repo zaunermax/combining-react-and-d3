@@ -7,7 +7,6 @@ import {
   getNodePositions,
   linkId,
   nodeId,
-  updateSimulation,
 } from 'lib/d3/forcePure'
 import { shallowCompare } from 'lib/util/shallow'
 import styled from 'styled-components/macro'
@@ -93,20 +92,26 @@ export class PureReactForceGraph extends Component {
 
   initSimulation = () => {
     const { data: nodes, links } = this.props
-    this.simulation = buildForceSimulation({ nodes, links })
+    const { simulation, updateSimulation } = buildForceSimulation({ nodes, links })
+    this.updateSimulation = updateSimulation
+    this.simulation = simulation
   }
 
   handlePossibleSimulationUpdate = (nextProps, nextState) => {
     const propsChanged = shallowCompare(this.props, nextProps)
     const stateChanged = shallowCompare(this.state, nextState)
     const shouldUpdate = propsChanged || stateChanged
-    if (shouldUpdate) this.updateSimulation(nextProps)
+    if (propsChanged) this.handleSimulationUpdate(nextProps)
     return shouldUpdate
   }
 
-  updateSimulation = (props = this.props) => {
+  handleSimulationUpdate = (props = this.props) => {
     const { data: nodes, links } = props
-    if (nodes) updateSimulation(this.simulation, { nodes: nodes || [], links: links || [] })
+    if (nodes)
+      this.updateSimulation({
+        simulation: this.simulation,
+        options: { nodes: nodes || [], links: links || [] },
+      })
   }
 
   updatePositions = () => {

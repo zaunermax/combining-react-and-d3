@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7968a51a-cf18-4cbf-bfc5-a5131f77c361" name="Default Changelist" comment="refactor(naming): refactored force test env variable names">
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/pureReact/pureLink.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/d3/forceHybrid.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/d3/forcePure.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/util/shallow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintrc" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc" afterDir="false" />
+    <list default="true" id="7968a51a-cf18-4cbf-bfc5-a5131f77c361" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/lib/fpUtil.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.storybook/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/.storybook/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/app/stateContainer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app/stateContainer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/hybrid/forceGraph.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/hybrid/forceGraph.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/pureD3/forceGraph.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pureD3/forceGraph.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/d3/forceService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pureReact/forceGraph.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/d3/linkPathService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/d3/linkPath.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pureReact/forceGraph.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pureReact/forceGraph.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/d3/forcePure.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/d3/forcePure.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/overview.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/overview.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stories/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/index.stories.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,17 +34,44 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/pages/overview.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-832">
-                  <caret line="2" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="66" />
+                <state relative-caret-position="-333">
+                  <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/routes.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="256">
+                  <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/lib/fpUtil.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="288">
+                  <caret line="18" column="67" selection-start-line="18" selection-start-column="66" selection-end-line="18" selection-end-column="67" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/lib/rndDataService.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="32">
+                  <caret line="2" column="80" selection-start-line="2" selection-start-column="80" selection-end-line="2" selection-end-column="80" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/components/pureReact/forceGraph.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1019">
-                  <caret line="103" column="23" lean-forward="true" selection-start-line="103" selection-start-column="23" selection-end-line="103" selection-end-column="23" />
+                <state relative-caret-position="163">
+                  <caret line="95" column="44" lean-forward="true" selection-start-line="95" selection-start-column="44" selection-end-line="95" selection-end-column="44" />
                 </state>
               </provider>
             </entry>
@@ -64,16 +80,16 @@
             <entry file="file://$PROJECT_DIR$/src/components/pureReact/pureLink.js">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="32">
-                  <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+                  <caret line="2" selection-start-line="2" selection-end-line="2" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/components/hybrid/forceGraph.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1313">
-                  <caret line="217" column="12" lean-forward="true" selection-start-line="217" selection-start-column="12" selection-end-line="217" selection-end-column="12" />
+                <state relative-caret-position="481">
+                  <caret line="141" column="19" lean-forward="true" selection-start-line="141" selection-start-column="19" selection-end-line="141" selection-end-column="19" />
                 </state>
               </provider>
             </entry>
@@ -85,8 +101,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/lib/d3/forcePure.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1056">
-                  <caret line="66" column="3" lean-forward="true" selection-start-line="66" selection-start-column="3" selection-end-line="66" selection-end-column="3" />
+                <state relative-caret-position="880">
+                  <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
                 </state>
               </provider>
             </entry>
@@ -132,6 +148,7 @@
       <find>animation</find>
       <find>start</find>
       <find>alphaTarget</find>
+      <find>.strength</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -153,7 +170,6 @@
         <option value="$PROJECT_DIR$/src/components/pureD3/ForceGraph.js" />
         <option value="$PROJECT_DIR$/src/pages/pureD3.js" />
         <option value="$PROJECT_DIR$/src/components/pureD3/barChart.js" />
-        <option value="$PROJECT_DIR$/src/routes.js" />
         <option value="$PROJECT_DIR$/src/pages/barChart.js" />
         <option value="$PROJECT_DIR$/src/lib/barChart.js" />
         <option value="$PROJECT_DIR$/src/app.js" />
@@ -176,8 +192,11 @@
         <option value="$PROJECT_DIR$/src/components/hybrid/forceGraph.js" />
         <option value="$PROJECT_DIR$/src/components/pureReact/pureLink.js" />
         <option value="$PROJECT_DIR$/src/pages/overview.js" />
+        <option value="$PROJECT_DIR$/src/routes.js" />
+        <option value="$PROJECT_DIR$/src/lib/fpUtil.js" />
         <option value="$PROJECT_DIR$/src/components/pureReact/forceGraph.js" />
         <option value="$PROJECT_DIR$/src/lib/d3/forcePure.js" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -201,7 +220,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -212,77 +231,19 @@
             <path>
               <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
               <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name=".storybook" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="app" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="hybrid" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="pureD3" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="pureReact" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
               <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="d3" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="combining-react-and-d3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="combining-react-and-d3" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="stories" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -290,7 +251,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="add_unversioned_files" value="$PROJECT_DIR$/.env" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/pureReact" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../react-vis-force" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -307,18 +268,19 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src" />
-      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\assets" />
-      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\app" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\lib" />
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\pureReact" />
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\pureD3" />
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\hybrid" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\app\globalStyle.js" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\pureReact" />
-      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\pureD3" />
-      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\components\hybrid" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src" />
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\assets" />
+      <recent name="C:\Users\zaune\Documents\_DEV\combining-react-and-d3\src\app" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -436,7 +398,8 @@
       <workItem from="1549374954039" duration="669000" />
       <workItem from="1553938698831" duration="27000" />
       <workItem from="1553938743888" duration="2154000" />
-      <workItem from="1553940919085" duration="11321000" />
+      <workItem from="1553940919085" duration="12146000" />
+      <workItem from="1554039188314" duration="8656000" />
     </task>
     <task id="LOCAL-00001" summary="feat(styles): added styled-components">
       <created>1548433449151</created>
@@ -508,24 +471,38 @@
       <option name="project" value="LOCAL" />
       <updated>1548785621062</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="feat(react): implemented pure react prototype">
+      <created>1553955410993</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1553955410994</updated>
+    </task>
+    <task id="LOCAL-00012" summary="docs(readme): added project starting instructions">
+      <created>1554048291198</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1554048291199</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="57988000" />
+    <option name="totallyTimeSpent" value="67469000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1200318" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12082671" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
       <window_info id="Favorites" order="4" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" x="-1920" y="383" width="1920" height="1017" id="Run" maximized="true" order="2" type="WINDOWED" visible="true" weight="0.32969603" />
+      <window_info anchor="bottom" x="-1920" y="383" width="1920" height="1017" id="Run" maximized="true" order="2" type="WINDOWED" visible="true" weight="0.32969603" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -561,7 +538,9 @@
     <MESSAGE value="chore(workspace): workspace commit" />
     <MESSAGE value="feat(graph): graph updates" />
     <MESSAGE value="refactor(naming): refactored force test env variable names" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(naming): refactored force test env variable names" />
+    <MESSAGE value="feat(react): implemented pure react prototype" />
+    <MESSAGE value="docs(readme): added project starting instructions" />
+    <option name="LAST_COMMIT_MESSAGE" value="docs(readme): added project starting instructions" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/index.css" />
@@ -623,20 +602,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/rndDataService.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="2" column="80" selection-start-line="2" selection-start-column="80" selection-end-line="2" selection-end-column="80" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/routes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="11" column="50" selection-start-line="11" selection-start-column="50" selection-end-line="11" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="176">
@@ -644,26 +609,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/pureReact.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.env">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/pureReact.js" />
     <entry file="file://$PROJECT_DIR$/.storybook/addons.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/stories/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="7" column="2" lean-forward="true" selection-start-line="7" selection-start-column="2" selection-end-line="9" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/stories/index.js" />
     <entry file="file://$PROJECT_DIR$/src/components/app/reactMove.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -675,13 +625,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="6" column="1" lean-forward="true" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.eslintrc">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="3" column="30" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -709,31 +652,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="25" column="39" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lib/util/shallow.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="16">
           <caret line="1" column="70" selection-start-line="1" selection-start-column="70" selection-end-line="1" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/app/stateContainer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/pureReact/pureLink.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
         </state>
       </provider>
     </entry>
@@ -744,20 +666,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/stories/index.stories.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="9" column="26" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/overview.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-832">
-          <caret line="2" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/d3-force/src/simulation.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="224">
@@ -765,24 +673,111 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/pureReact/forceGraph.js">
+    <entry file="file://$PROJECT_DIR$/.eslintrc">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1019">
-          <caret line="103" column="23" lean-forward="true" selection-start-line="103" selection-start-column="23" selection-end-line="103" selection-end-column="23" />
+        <state relative-caret-position="48">
+          <caret line="3" column="30" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/d3/forcePure.js">
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1056">
-          <caret line="66" column="3" lean-forward="true" selection-start-line="66" selection-start-column="3" selection-end-line="66" selection-end-column="3" />
+        <state relative-caret-position="304">
+          <caret line="19" column="78" lean-forward="true" selection-start-line="19" selection-start-column="78" selection-end-line="19" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/pureReact/pureLink.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="32">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/stories/index.stories.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/app/stateContainer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/hybrid/forceGraph.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1313">
-          <caret line="217" column="12" lean-forward="true" selection-start-line="217" selection-start-column="12" selection-end-line="217" selection-end-column="12" />
+        <state relative-caret-position="481">
+          <caret line="141" column="19" lean-forward="true" selection-start-line="141" selection-start-column="19" selection-end-line="141" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/overview.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-333">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/routes.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/rndDataService.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="32">
+          <caret line="2" column="80" selection-start-line="2" selection-start-column="80" selection-end-line="2" selection-end-column="80" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/fpUtil.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="18" column="67" selection-start-line="18" selection-start-column="66" selection-end-line="18" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="25" column="39" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.env">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="496">
+            <caret line="31" column="50" selection-start-line="31" selection-start-column="50" selection-end-line="31" selection-end-column="50" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/pureReact/forceGraph.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="95" column="44" lean-forward="true" selection-start-line="95" selection-start-column="44" selection-end-line="95" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/d3/forcePure.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="880">
+          <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
         </state>
       </provider>
     </entry>

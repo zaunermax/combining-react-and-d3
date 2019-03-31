@@ -1,7 +1,13 @@
 import React, { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 
-const AsyncPureD3ForceGraph = lazy(() => import('./pages/overview'))
+const ROOT = '/'
+const OVERVIEW = '/overview'
+const BAR_CHART = '/barchart'
+
+const DEFAULT = OVERVIEW
+
+const OverViewPage = lazy(() => import('./pages/overview'))
 const AsyncBarChartExample = lazy(() => import('./pages/barChart'))
 
 const LoadingMessage = () => `Loading...`
@@ -9,12 +15,12 @@ const LoadingMessage = () => `Loading...`
 export const Routes = () => (
   <Suspense fallback={<LoadingMessage />}>
     <Switch>
-      <Redirect from={'/'} to={'/pureD3'} exact />
-      <Route path={'/barChart'}>
+      <Redirect from={ROOT} to={DEFAULT} exact />
+      <Route path={BAR_CHART}>
         <AsyncBarChartExample />
       </Route>
-      <Route path={'/pureD3'}>
-        <AsyncPureD3ForceGraph />
+      <Route path={OVERVIEW}>
+        <OverViewPage />
       </Route>
     </Switch>
   </Suspense>
