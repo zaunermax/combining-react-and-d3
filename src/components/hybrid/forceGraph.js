@@ -1,17 +1,6 @@
 import React, { Component, createRef } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components/macro'
-import {
-  forceCenter,
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  forceX,
-  forceY,
-} from 'd3-force'
-import { select, event } from 'd3-selection'
-import { drag } from 'd3-drag'
 import { NodeGroup } from 'components/app/reactMove'
 import { easeCubic } from 'd3-ease'
 import {
@@ -20,7 +9,7 @@ import {
   LINK_TYPES,
   LinkTypePropType,
 } from 'lib/d3/linkPath'
-import { buildForceSimulation, SIMULATION_TYPE } from 'lib/d3/forcePure'
+import { buildForceSimulation, encapsulateOutsideData, SIMULATION_TYPE } from 'lib/d3/forcePure'
 import { shallowCompare } from 'lib/util/shallow'
 
 const ANIMATION_DURATION = 750
@@ -34,8 +23,6 @@ const Container = styled.span`
   position: relative;
   display: inline-block;
 `
-
-const findName = (name) => ({ name: n }) => n === name
 
 export class HybridForceGraph extends Component {
   state = { curSel: 'nix' }
@@ -63,23 +50,12 @@ export class HybridForceGraph extends Component {
     this.ref = createRef()
   }
 
-  // TODO: create a hoc out of this
-  // I added this to prevent the outside data from being mutated
-  static getDerivedStateFromProps({ data, links }, { data: stateData }) {
-    const newData = data.map(({ name, size }) => {
-      const existing = stateData.find(({ name: n }) => name === n)
-      return existing ? Object.assign(existing, { size }) : { name, size }
-    })
+  static getDerivedStateFromProps(props, state) {
+    return encapsulateOutsideData(props, state)
+  }
 
-    const newLinks = links
-      ? links.map(({ source: { name: sName }, target: { name: tName } }) => {
-          const source = newData.find(findName(sName))
-          const target = newData.find(findName(tName))
-          return { source, target }
-        })
-      : []
-
-    return { data: newData, links: newLinks }
+  componentDidMount() {
+    this.initSimulation()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -88,11 +64,6 @@ export class HybridForceGraph extends Component {
     const updateParams = this.extractSimUpdateParams(nextProps)
     propsChanged && this.updateSimulation(updateParams)
     return propsChanged || stateChanged
-  }
-
-  componentDidMount() {
-    debugger
-    this.initSimulation()
   }
 
   getLinkPath = (d) =>
@@ -123,7 +94,7 @@ export class HybridForceGraph extends Component {
       nodes: nodes || [],
       links: links || [],
       tickHandler: this.ticked,
-      ref: this.ref,
+      ref: this.ref || {},
     }
   }
 
@@ -134,6 +105,7 @@ export class HybridForceGraph extends Component {
 
   initSimulation = () => {
     const simOptions = this.extractSimOptions()
+    debugger
     const { simulation, updateSimulation } = buildForceSimulation({
       type: SIMULATION_TYPE.REACT_D3_HYBRID,
       ...simOptions,

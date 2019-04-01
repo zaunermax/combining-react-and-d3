@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import * as jz from 'jeezy'
-// import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
-// import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { randomizeData, randomizeLinks } from 'lib/rndDataService'
 import { LINK_TYPES } from 'lib/d3/linkPath'
-import { PureReactForceGraph } from 'components/pureReact/forceGraph'
+import { HybridForceGraph } from 'components/hybrid/forceGraph'
 
 const STD_WIDTH = 900
 const STD_HEIGHT = 900
@@ -93,7 +91,7 @@ export default class extends Component {
           height={STD_HEIGHT}
           linkType={linkType}
         />*/}
-        {/*<HybridForceGraph
+        <HybridForceGraph
           data={data}
           links={links}
           width={width}
@@ -101,15 +99,15 @@ export default class extends Component {
           linkType={linkType}
           selNode={selNode}
           selectNode={this.selectNode}
-        />*/}
-        <PureReactForceGraph
+        />
+        {/*<PureReactForceGraph
           data={data}
           links={links}
           width={width}
           height={STD_HEIGHT}
           linkType={linkType}
           selNode={selNode}
-        />
+        />*/}
         <div>
           <button onClick={this.onUpdateForce}>update force</button>
           <button onClick={this.onUpdateRandomData}>update rnd data</button>

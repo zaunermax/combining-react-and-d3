@@ -33,6 +33,25 @@ const onDragEnded = (simulation) => (d) => {
 
 // -------------- Util -------------- //
 
+const findName = (name) => ({ name: n }) => n === name
+
+export const encapsulateOutsideData = ({ data, links }, { data: stateData }) => {
+  const newData = data.map(({ name, size }) => {
+    const existing = stateData.find(({ name: n }) => name === n)
+    return existing ? Object.assign(existing, { size }) : { name, size }
+  })
+
+  const newLinks = links
+    ? links.map(({ source: { name: sName }, target: { name: tName } }) => {
+        const source = newData.find(findName(sName))
+        const target = newData.find(findName(tName))
+        return { source, target }
+      })
+    : []
+
+  return { data: newData, links: newLinks }
+}
+
 export const nodeId = ({ index }) => index
 
 export const linkId = (link) => {
@@ -46,7 +65,6 @@ const calcLinkDist = ({ source: { size: s }, target: { size: t } }) => (s > t ? 
 
 // apply functions do not have to return args anymore
 const applyArgs = (fn) => (args) => {
-  console.log('ARGS:', args)
   fn(args)
   return args
 }
