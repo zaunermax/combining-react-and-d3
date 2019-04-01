@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { LINK_TYPES, LinkTypePropType } from 'lib/d3/linkPath'
 import {
   buildForceSimulation,
-  extractSimOptions,
-  extractSimUpdateParams,
   getLinkPaths,
   getNodePositions,
   linkId,
@@ -92,12 +90,23 @@ export class PureReactForceGraph extends Component {
     return this.state.linkPositions[linkId(link)]
   }
 
+  extractSimOptions = (overrideProps = null) => {
+    const { nodesRef, props } = this
+    const { data: nodes, links, forceOptions } = overrideProps || props
+    return { nodes: nodes || [], links: links || [], nodesRef, ...forceOptions }
+  }
+
+  extractSimUpdateParams = (overrideProps = null) => ({
+    simulation: this.simulation,
+    options: this.extractSimOptions(overrideProps),
+  })
+
   // Simulation
 
   initSimulation = () => {
     const { simulation, updateSimulation } = buildForceSimulation({
       type: SIMULATION_TYPE.PURE_REACT,
-      ...extractSimOptions(this),
+      ...this.extractSimOptions(),
     })
     this.updateSimulation = updateSimulation
     this.simulation = simulation
@@ -111,9 +120,8 @@ export class PureReactForceGraph extends Component {
     return shouldUpdate
   }
 
-  handleSimulationUpdate = (overrideProps) => {
-    this.updateSimulation(extractSimUpdateParams(this, overrideProps))
-  }
+  handleSimulationUpdate = (overrideProps) =>
+    this.updateSimulation(this.extractSimUpdateParams(overrideProps))
 
   updatePositions = () => {
     this.setState({

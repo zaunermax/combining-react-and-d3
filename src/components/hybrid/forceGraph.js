@@ -20,6 +20,8 @@ import {
   LINK_TYPES,
   LinkTypePropType,
 } from 'lib/d3/linkPath'
+import { buildForceSimulation, SIMULATION_TYPE } from 'lib/d3/forcePure'
+import { shallowCompare } from 'lib/util/shallow'
 
 const ANIMATION_DURATION = 750
 
@@ -81,18 +83,16 @@ export class HybridForceGraph extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (
-      Object.keys(nextProps).some((key) => nextProps[key] !== this.props[key]) ||
-      Object.keys(nextState).some((key) => nextState[key] !== this.state[key])
-    )
+    const propsChanged = shallowCompare(this.props, nextProps)
+    const stateChanged = shallowCompare(this.state, nextState)
+    const updateParams = this.extractSimUpdateParams(nextProps)
+    propsChanged && this.updateSimulation(updateParams)
+    return propsChanged || stateChanged
   }
 
   componentDidMount() {
+    debugger
     this.initSimulation()
-  }
-
-  componentDidUpdate() {
-    this.refreshGraph()
   }
 
   getLinkPath = (d) =>
@@ -101,7 +101,7 @@ export class HybridForceGraph extends Component {
   ticked = () => {
     const { links, data } = this.state
 
-    this.nodeSel
+    this.simulation.nodeSel
       .data(data, function(d) {
         return d ? d.name : this.id
       })
@@ -109,79 +109,37 @@ export class HybridForceGraph extends Component {
       .attr('cy', (d) => d.y)
 
     links &&
-      this.linkSel
+      this.simulation.linkSel
         .data(links, function(d) {
           return d ? d.source.name + d.target.name : this.id
         })
         .attr('d', this.getLinkPath)
   }
 
+  extractSimOptions = (overrideProps = null) => {
+    const { data: nodes, links, forceOptions } = overrideProps || this.props
+    return {
+      ...forceOptions,
+      nodes: nodes || [],
+      links: links || [],
+      tickHandler: this.ticked,
+      ref: this.ref,
+    }
+  }
+
+  extractSimUpdateParams = (overrideProps = null) => ({
+    simulation: this.simulation,
+    options: this.extractSimOptions(overrideProps),
+  })
+
   initSimulation = () => {
-    this.simulation = forceSimulation()
-      .force('charge', forceManyBody().strength(-150))
-      .force('forceX', forceX().strength(0.1))
-      .force('forceY', forceY().strength(0.1))
-      .force('center', forceCenter())
-      .on('tick', this.ticked)
-
-    this.refreshGraph()
-  }
-
-  onDragStarted = (d) => {
-    this.simulation.alpha(0.3).restart()
-    d.fx = d.x
-    d.fy = d.y
-  }
-
-  onDrag = (d) => {
-    this.simulation.alpha(0.3).restart()
-    d.fx = event.x
-    d.fy = event.y
-  }
-
-  onDragEnded = (d) => {
-    this.simulation.alpha(0.3).restart()
-    this.simulation.alphaMin(0.001)
-    d.fx = null
-    d.fy = null
-  }
-
-  refreshGraph = () => {
-    const selection = select(this.ref.current)
-
-    this.nodeSel = selection.selectAll('circle')
-    this.linkSel = selection.selectAll('path')
-
-    this.simulation
-      .nodes(this.state.data)
-      .force(
-        'collide',
-        forceCollide()
-          .strength(1)
-          .radius(({ size }) => size + 10)
-          .iterations(1),
-      )
-      .force(
-        'link',
-        forceLink(this.state.links)
-          .distance(({ source: { size: s }, target: { size: t } }) => (s > t ? s + 10 : t + 10))
-          .strength(0.1)
-          .id((d) => d.name),
-      )
-
-    this.simulation.alpha(1).restart()
-    this.simulation.alphaMin(0.001)
-
-    // the dragging should be handled by d3
-    // position is a prop that is tracked by d3 NOT react
-    select(this.ref.current)
-      .selectAll('circle')
-      .call(
-        drag()
-          .on('start', this.onDragStarted)
-          .on('drag', this.onDrag)
-          .on('end', this.onDragEnded),
-      )
+    const simOptions = this.extractSimOptions()
+    const { simulation, updateSimulation } = buildForceSimulation({
+      type: SIMULATION_TYPE.REACT_D3_HYBRID,
+      ...simOptions,
+    })
+    this.simulation = simulation
+    this.updateSimulation = updateSimulation
   }
 
   logNode = (name) => () => {

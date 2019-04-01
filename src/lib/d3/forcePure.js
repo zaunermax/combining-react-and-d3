@@ -8,21 +8,25 @@ import {
   forceX,
   forceY,
 } from 'd3-force'
-import { event } from 'd3-selection'
+import { event, select } from 'd3-selection'
 import { getCurvedLinkPath } from 'lib/d3/linkPath'
 import { pipe, switchCase } from 'lib/fpUtil'
 
-const onDragStarted = (d) => {
+const onDragStarted = (simulation) => (d) => {
+  simulation.alpha(0.3).restart()
   d.fx = d.x
   d.fy = d.y
 }
 
-const onDrag = (d) => {
+const onDrag = (simulation) => (d) => {
+  simulation.alpha(0.3).restart()
   d.fx = event.x
   d.fy = event.y
 }
 
-const onDragEnded = (d) => {
+const onDragEnded = (simulation) => (d) => {
+  simulation.alpha(1).restart()
+  simulation.alphaMin(0.001)
   d.fx = null
   d.fy = null
 }
@@ -38,20 +42,11 @@ export const linkId = (link) => {
   return `${sourceId}=>${targetId}`
 }
 
-export const extractSimOptions = ({ nodesRef, props }, overrideProps = null) => {
-  const { data: nodes, links, forceOptions } = overrideProps || props
-  return { nodes: nodes || [], links: links || [], nodesRef, ...forceOptions }
-}
-
-export const extractSimUpdateParams = (componentInstance, overrideProps = null) => ({
-  simulation: componentInstance.simulation,
-  options: extractSimOptions(componentInstance, overrideProps),
-})
-
 const calcLinkDist = ({ source: { size: s }, target: { size: t } }) => (s > t ? s + 10 : t + 10)
 
 // apply functions do not have to return args anymore
 const applyArgs = (fn) => (args) => {
+  console.log('ARGS:', args)
   fn(args)
   return args
 }
@@ -107,6 +102,16 @@ const applySimulationReheating = ({ simulation }) => {
   simulation.alphaMin(0.001)
 }
 
+const applyNewRefs = (simulation, { ref }) => {
+  const selection = select(ref.current)
+  simulation.nodeSel = selection.selectAll('circle')
+  simulation.linkSel = selection.selectAll('path')
+}
+
+const applyTickHandler = (simulation, { tickHandler }) => {
+  simulation.on('tick', tickHandler)
+}
+
 // -------------- Simulation -------------- //
 
 export const SIMULATION_TYPE = {
@@ -123,8 +128,19 @@ const pureD3Updater = pipeAppliers(
   applySimulationReheating,
 )
 
+const hybridUpdater = pipeAppliers(
+  applyNewNodes,
+  applyNewRefs,
+  applyTickHandler,
+  applyGeneralForce,
+  applyLinkForce,
+  applyCollisionForce,
+  applySimulationReheating,
+)
+
 const getUpdaterFunction = switchCase({
   [SIMULATION_TYPE.PURE_REACT]: pureD3Updater,
+  [SIMULATION_TYPE.REACT_D3_HYBRID]: hybridUpdater,
 })(null)
 
 export const buildForceSimulation = (options) => {
