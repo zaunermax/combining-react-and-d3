@@ -13,7 +13,7 @@ import { getCurvedLinkPath } from 'lib/d3/linkPath'
 import { pipe, switchCase } from 'lib/fpUtil'
 
 const onDragStarted = (simulation) => (d) => {
-  simulation.alpha(0.3).restart()
+  simulation.alpha(simulation.alpha()).restart()
   d.fx = d.x
   d.fy = d.y
 }
@@ -131,6 +131,10 @@ const applyTickHandler = ({ simulation, options: { tickHandler } }) => {
   simulation.on('tick', tickHandler)
 }
 
+const applyDragHandlers = ({ simulation }) => {
+  updateDragAndDrop(simulation)
+}
+
 // -------------- Simulation -------------- //
 
 export const SIMULATION_TYPE = {
@@ -155,6 +159,7 @@ const hybridUpdater = pipeAppliers(
   applyLinkForce,
   applyCollisionForce,
   applySimulationReheating,
+  applyDragHandlers,
 )
 
 const getUpdaterFunction = switchCase({
@@ -169,12 +174,12 @@ export const buildForceSimulation = (options) => {
   return { simulation, updateSimulation }
 }
 
-export const updateDragAndDrop = (nodeSel) => {
-  nodeSel.call(
+export const updateDragAndDrop = (simulation) => {
+  simulation.nodeSel.call(
     drag()
-      .on('start', onDragStarted)
-      .on('drag', onDrag)
-      .on('end', onDragEnded),
+      .on('start', onDragStarted(simulation))
+      .on('drag', onDrag(simulation))
+      .on('end', onDragEnded(simulation)),
   )
 }
 

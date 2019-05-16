@@ -35,9 +35,10 @@ export class PureReactForceGraph extends Component {
     width: PropTypes.number,
     height: PropTypes.number,
     linkType: LinkTypePropType,
-    selNode: PropTypes.string,
     selectNode: PropTypes.func,
-    forceOptions: PropTypes.object,
+    forceOptions: PropTypes.shape({
+      radiusMultiplier: PropTypes.number,
+    }),
   }
 
   static defaultProps = {
@@ -47,6 +48,9 @@ export class PureReactForceGraph extends Component {
     width: 500,
     height: 500,
     linkType: LINK_TYPES.STRAIGHT,
+    forceOptions: {
+      radiusMultiplier: 1.2,
+    },
   }
 
   // Lifecycle

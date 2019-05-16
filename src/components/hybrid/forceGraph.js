@@ -33,8 +33,10 @@ export class HybridForceGraph extends Component {
     width: PropTypes.number,
     height: PropTypes.number,
     linkType: LinkTypePropType,
-    selNode: PropTypes.string,
     selectNode: PropTypes.func,
+    forceOptions: PropTypes.shape({
+      radiusMultiplier: PropTypes.number,
+    }),
   }
 
   static defaultProps = {
@@ -43,6 +45,9 @@ export class HybridForceGraph extends Component {
     width: 500,
     height: 500,
     linkType: LINK_TYPES.STRAIGHT,
+    forceOptions: {
+      radiusMultiplier: 1.2,
+    },
   }
 
   constructor(props) {
@@ -117,8 +122,6 @@ export class HybridForceGraph extends Component {
   })
 
   logNode = (name) => () => {
-    const { selectNode } = this.props
-    selectNode(name)
     console.log('name', name)
   }
 
@@ -141,7 +144,7 @@ export class HybridForceGraph extends Component {
   })
 
   render() {
-    const { height, width, selNode } = this.props
+    const { height, width } = this.props
     const { data, links } = this.state
 
     return (
@@ -162,13 +165,7 @@ export class HybridForceGraph extends Component {
               {(nodes) => (
                 <>
                   {nodes.map(({ key, state: { fill, r } }) => (
-                    <circle
-                      key={key}
-                      id={key}
-                      onClick={this.logNode(key)}
-                      fill={key === selNode ? 'red' : fill}
-                      r={r}
-                    />
+                    <circle key={key} id={key} onClick={this.logNode(key)} fill={fill} r={r} />
                   ))}
                 </>
               )}
