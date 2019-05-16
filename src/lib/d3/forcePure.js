@@ -78,6 +78,7 @@ const applyGeneralForce = ({ simulation }) => {
   if (!simulation.force('center')) {
     simulation
       .force('center', forceCenter())
+      .force('center', forceCenter())
       .force('charge', forceManyBody().strength(-150))
       .force('forceX', forceX().strength(0.1))
       .force('forceY', forceY().strength(0.1))
@@ -120,13 +121,13 @@ const applySimulationReheating = ({ simulation }) => {
   simulation.alphaMin(0.001)
 }
 
-const applyNewRefs = (simulation, { ref }) => {
+const applyNewRefs = ({ simulation, options: { ref } }) => {
   const selection = select(ref.current)
   simulation.nodeSel = selection.selectAll('circle')
   simulation.linkSel = selection.selectAll('path')
 }
 
-const applyTickHandler = (simulation, { tickHandler }) => {
+const applyTickHandler = ({ simulation, options: { tickHandler } }) => {
   simulation.on('tick', tickHandler)
 }
 

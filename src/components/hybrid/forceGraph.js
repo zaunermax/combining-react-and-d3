@@ -59,11 +59,21 @@ export class HybridForceGraph extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const propsChanged = shallowCompare(this.props, nextProps)
-    const stateChanged = shallowCompare(this.state, nextState)
-    const updateParams = this.extractSimUpdateParams(nextProps)
-    propsChanged && this.updateSimulation(updateParams)
-    return propsChanged || stateChanged
+    return shallowCompare(this.props, nextProps) || shallowCompare(this.state, nextState)
+  }
+
+  componentDidUpdate() {
+    this.updateSimulation(this.extractSimUpdateParams())
+  }
+
+  initSimulation = () => {
+    const simOptions = this.extractSimOptions()
+    const { simulation, updateSimulation } = buildForceSimulation({
+      type: SIMULATION_TYPE.REACT_D3_HYBRID,
+      ...simOptions,
+    })
+    this.simulation = simulation
+    this.updateSimulation = updateSimulation
   }
 
   getLinkPath = (d) =>
@@ -76,7 +86,9 @@ export class HybridForceGraph extends Component {
       .data(data, function(d) {
         return d ? d.name : this.id
       })
-      .attr('cx', (d) => d.x)
+      .attr('cx', (d) => {
+        return d.x
+      })
       .attr('cy', (d) => d.y)
 
     links &&
@@ -87,8 +99,9 @@ export class HybridForceGraph extends Component {
         .attr('d', this.getLinkPath)
   }
 
-  extractSimOptions = (overrideProps = null) => {
-    const { data: nodes, links, forceOptions } = overrideProps || this.props
+  extractSimOptions = () => {
+    const { forceOptions } = this.props
+    const { data: nodes, links } = this.state
     return {
       ...forceOptions,
       nodes: nodes || [],
@@ -98,21 +111,10 @@ export class HybridForceGraph extends Component {
     }
   }
 
-  extractSimUpdateParams = (overrideProps = null) => ({
+  extractSimUpdateParams = () => ({
     simulation: this.simulation,
-    options: this.extractSimOptions(overrideProps),
+    options: this.extractSimOptions(),
   })
-
-  initSimulation = () => {
-    const simOptions = this.extractSimOptions()
-    debugger
-    const { simulation, updateSimulation } = buildForceSimulation({
-      type: SIMULATION_TYPE.REACT_D3_HYBRID,
-      ...simOptions,
-    })
-    this.simulation = simulation
-    this.updateSimulation = updateSimulation
-  }
 
   logNode = (name) => () => {
     const { selectNode } = this.props
