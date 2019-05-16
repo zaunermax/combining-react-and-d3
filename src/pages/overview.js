@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import * as jz from 'jeezy'
-import { randomizeData, randomizeLinks } from 'lib/rndDataService'
+import { randomizeData, randomizeLinks } from 'lib/legacyRndHelpers'
 import { LINK_TYPES } from 'lib/d3/linkPath'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { PureReactForceGraph } from 'components/pureReact/forceGraph'
@@ -79,7 +79,7 @@ export default class extends Component {
   }
 
   render() {
-    const { width, data, links, linkType, selNode } = this.state
+    const { width, data, links, linkType } = this.state
 
     return (
       <div>

@@ -35,7 +35,7 @@ const onDragEnded = (simulation) => (d) => {
 
 const findName = (name) => ({ name: n }) => n === name
 
-export const encapsulateOutsideData = ({ data, links }, { data: stateData }) => {
+export const encapsulateOutsideData = ({ data, links }, { data: stateData = [] }) => {
   const newData = data.map(({ name, size }) => {
     const existing = stateData.find(({ name: n }) => name === n)
     return existing ? Object.assign(existing, { size }) : { name, size }
@@ -107,7 +107,7 @@ const applyLinkForce = ({ simulation, options: { links } }) => {
   if (!simulation.force('link')) {
     const fLink = forceLink()
     fLink.distance(250)
-    fLink.strength(0.1)
+    fLink.strength(0.2)
     fLink.distance(calcLinkDist)
     fLink.id(nodeId)
     simulation.force('link', fLink)
@@ -135,6 +135,10 @@ const applyDragHandlers = ({ simulation }) => {
   updateDragAndDrop(simulation)
 }
 
+const applyOnEndHandler = ({ simulation, options: { endHandler } }) => {
+  simulation.on('end', endHandler)
+}
+
 // -------------- Simulation -------------- //
 
 export const SIMULATION_TYPE = {
@@ -149,6 +153,7 @@ const pureD3Updater = pipeAppliers(
   applyLinkForce,
   applyCollisionForce,
   applySimulationReheating,
+  applyOnEndHandler,
 )
 
 const hybridUpdater = pipeAppliers(
@@ -160,6 +165,7 @@ const hybridUpdater = pipeAppliers(
   applyCollisionForce,
   applySimulationReheating,
   applyDragHandlers,
+  applyOnEndHandler,
 )
 
 const getUpdaterFunction = switchCase({

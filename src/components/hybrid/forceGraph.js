@@ -104,6 +104,10 @@ export class HybridForceGraph extends Component {
         .attr('d', this.getLinkPath)
   }
 
+  onEnd = () => {
+    console.log('Hybrid simulation has finished.', performance.now())
+  }
+
   extractSimOptions = () => {
     const { forceOptions } = this.props
     const { data: nodes, links } = this.state
@@ -112,6 +116,7 @@ export class HybridForceGraph extends Component {
       nodes: nodes || [],
       links: links || [],
       tickHandler: this.ticked,
+      endHandler: this.onEnd,
       ref: this.ref || {},
     }
   }

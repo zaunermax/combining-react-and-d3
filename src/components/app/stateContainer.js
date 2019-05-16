@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import * as jz from 'jeezy'
-import { randomizeData, randomizeLinks } from 'lib/rndDataService'
+import { randomizeData, randomizeLinks } from 'lib/legacyRndHelpers'
 import { LINK_TYPES } from 'lib/d3/linkPath'
 
 const STD_WIDTH = 900

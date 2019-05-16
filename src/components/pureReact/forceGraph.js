@@ -94,10 +94,20 @@ export class PureReactForceGraph extends Component {
     return this.state.linkPositions[linkId(link)]
   }
 
+  onEnd = () => {
+    console.log('Pure react simulation has finished.', performance.now())
+  }
+
   extractSimOptions = (overrideProps = null) => {
     const { nodesRef, props } = this
     const { data: nodes, links, forceOptions } = overrideProps || props
-    return { nodes: nodes || [], links: links || [], nodesRef, ...forceOptions }
+    return {
+      nodes: nodes || [],
+      links: links || [],
+      nodesRef,
+      endHandler: this.onEnd,
+      ...forceOptions,
+    }
   }
 
   extractSimUpdateParams = (overrideProps = null) => ({

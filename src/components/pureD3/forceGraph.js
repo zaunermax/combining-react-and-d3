@@ -18,8 +18,7 @@ import {
   LINK_TYPES,
   LinkTypePropType,
 } from 'lib/d3/linkPath'
-
-const findName = (name) => ({ name: n }) => n === name
+import { encapsulateOutsideData } from 'lib/d3/forcePure'
 
 export class PureD3ForceGraph extends Component {
   state = {}
@@ -47,21 +46,8 @@ export class PureD3ForceGraph extends Component {
   }
 
   // I added this to prevent the outside data from being mutated
-  static getDerivedStateFromProps({ data, links }, { data: stateData }) {
-    const newData = data.map(({ name, size }) => {
-      const existing = stateData.find(({ name: n }) => name === n)
-      return existing ? Object.assign(existing, { size }) : { name, size }
-    })
-
-    const newLinks = links
-      ? links.map(({ source: { name: sName }, target: { name: tName } }) => {
-          const source = newData.find(findName(sName))
-          const target = newData.find(findName(tName))
-          return { source, target }
-        })
-      : []
-
-    return { data: newData, links: newLinks }
+  static getDerivedStateFromProps(props, state) {
+    return encapsulateOutsideData(props, state)
   }
 
   componentDidUpdate({ width, height }) {

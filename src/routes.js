@@ -1,14 +1,19 @@
 import React, { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 
-const ROOT = '/'
-const OVERVIEW = '/overview'
-const BAR_CHART = '/barchart'
+export const ROOT = '/'
+export const OVERVIEW = '/overview'
+export const BAR_CHART = '/barchart'
+export const BENCHMARK = '/bench/:nrOfNodes/:nrOfLinks'
+export const D3_BENCH = BENCHMARK + '/d3'
+export const HYBRID_BENCH = BENCHMARK + '/hybrid'
+export const PURE_BENCH = BENCHMARK + '/pure'
 
 const DEFAULT = OVERVIEW
 
 const OverViewPage = lazy(() => import('./pages/overview'))
 const AsyncBarChartExample = lazy(() => import('./pages/barChart'))
+const AsyncBenchmark = lazy(() => import('./pages/benchmark'))
 
 const LoadingMessage = () => `Loading...`
 
@@ -22,6 +27,7 @@ export const Routes = () => (
       <Route path={OVERVIEW}>
         <OverViewPage />
       </Route>
+      <Route path={BENCHMARK} component={(props) => <AsyncBenchmark {...props} />} />
     </Switch>
   </Suspense>
 )
