@@ -9,27 +9,40 @@ import {
   forceY,
 } from 'd3-force'
 import { event, select } from 'd3-selection'
-import { getCurvedLinkPath } from 'lib/d3/linkPath'
+import { getCurvedLinkPath, LINK_TYPES, LinkTypePropType } from 'lib/d3/linkPath'
 import { pipe, switchCase } from 'lib/fpUtil'
+import PropTypes from 'prop-types'
 
-const onDragStarted = (simulation) => (d) => {
-  simulation.alpha(simulation.alpha()).restart()
-  d.fx = d.x
-  d.fy = d.y
-}
+export const ForceGraphProps = Object.freeze({
+  data: PropTypes.array,
+  links: PropTypes.array,
+  width: PropTypes.number,
+  height: PropTypes.number,
+  linkType: LinkTypePropType,
+  selNode: PropTypes.string,
+  selectNode: PropTypes.func,
+  performance: PropTypes.shape({
+    startHandler: PropTypes.func.isRequired,
+    endHandler: PropTypes.func.isRequired,
+  }),
+})
 
-const onDrag = (simulation) => (d) => {
-  simulation.alpha(0.3).restart()
-  d.fx = event.x
-  d.fy = event.y
-}
+export const ForceGraphDefaultProps = Object.freeze({
+  data: [],
+  links: [],
+  width: 500,
+  height: 500,
+  linkType: LINK_TYPES.CURVED,
+  forceOptions: {
+    radiusMultiplier: 1.2,
+  },
+})
 
-const onDragEnded = (simulation) => (d) => {
-  simulation.alpha(1).restart()
-  simulation.alphaMin(0.001)
-  d.fx = null
-  d.fy = null
-}
+export const SIMULATION_TYPE = Object.freeze({
+  PURE_REACT: 'pureReact',
+  PURE_D3: 'pureD3',
+  REACT_D3_HYBRID: 'reactD3Hybrid',
+})
 
 // -------------- Util -------------- //
 
@@ -62,6 +75,49 @@ export const linkId = (link) => {
 }
 
 const calcLinkDist = ({ source: { size: s }, target: { size: t } }) => (s > t ? s + 10 : t + 10)
+
+export const getNodePositions = (simulation) =>
+  simulation.nodes().reduce(
+    (obj, node) =>
+      Object.assign(obj, {
+        [nodeId(node)]: {
+          cx: node.fx || node.x,
+          cy: node.fy || node.y,
+        },
+      }),
+    {},
+  )
+
+export const getLinkPaths = (simulation) =>
+  simulation
+    .force('link')
+    .links()
+    .reduce(
+      (obj, link) =>
+        Object.assign(obj, {
+          [linkId(link)]: getCurvedLinkPath(link),
+        }),
+      {},
+    )
+
+const onDragStarted = (simulation) => (d) => {
+  simulation.alpha(simulation.alpha()).restart()
+  d.fx = d.x
+  d.fy = d.y
+}
+
+const onDrag = (simulation) => (d) => {
+  simulation.alpha(0.3).restart()
+  d.fx = event.x
+  d.fy = event.y
+}
+
+const onDragEnded = (simulation) => (d) => {
+  simulation.alpha(1).restart()
+  simulation.alphaMin(0.001)
+  d.fx = null
+  d.fy = null
+}
 
 // apply functions do not have to return args anymore
 const applyArgs = (fn) => (args) => {
@@ -165,12 +221,6 @@ const applyPureD3Selection = ({ simulation, options }) => {
 
 // -------------- Simulation -------------- //
 
-export const SIMULATION_TYPE = Object.freeze({
-  PURE_REACT: 'pureReact',
-  PURE_D3: 'pureD3',
-  REACT_D3_HYBRID: 'reactD3Hybrid',
-})
-
 const pureD3Updater = pipeAppliers(
   applyNewNodeData,
   applyPureD3Selection,
@@ -216,27 +266,3 @@ export const buildForceSimulation = (options) => {
   updateSimulation({ simulation, options })
   return { simulation, updateSimulation }
 }
-
-export const getNodePositions = (simulation) =>
-  simulation.nodes().reduce(
-    (obj, node) =>
-      Object.assign(obj, {
-        [nodeId(node)]: {
-          cx: node.fx || node.x,
-          cy: node.fy || node.y,
-        },
-      }),
-    {},
-  )
-
-export const getLinkPaths = (simulation) =>
-  simulation
-    .force('link')
-    .links()
-    .reduce(
-      (obj, link) =>
-        Object.assign(obj, {
-          [linkId(link)]: getCurvedLinkPath(link),
-        }),
-      {},
-    )

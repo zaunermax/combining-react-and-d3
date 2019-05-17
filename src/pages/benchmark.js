@@ -15,6 +15,10 @@ const Container = styled.div`
   overflow: hidden;
 `
 
+const Result = styled.div`
+  font-size: 2em;
+`
+
 const forceVariations = Object.freeze([
   { path: D3_BENCH, ForceComponent: PureD3ForceGraph },
   { path: HYBRID_BENCH, ForceComponent: HybridForceGraph },
@@ -32,12 +36,24 @@ class BenchmarkContainer extends Component {
     const nrOfLinks = props.match.params.nrOfLinks || 0
     this.state = {
       ...generateRandomNodeData(nrOfNodes, nrOfLinks),
+      benchmarkRunning: false,
     }
   }
 
+  onStartHandler = () => {
+    this.perf = performance.now()
+  }
+
+  onEndHandler = () => {
+    this.setState(() => ({
+      benchmarkRunning: false,
+      time: performance.now() - this.perf,
+    }))
+  }
+
   render() {
-    const { nodes = [], links = [] } = this.state
-    return (
+    const { nodes = [], links = [], benchmarkRunning, time } = this.state
+    return benchmarkRunning ? (
       <Container>
         <Autosizer>
           {({ height, width }) => (
@@ -54,6 +70,10 @@ class BenchmarkContainer extends Component {
                       height={height}
                       width={width}
                       forceOptions={forceOptions}
+                      performance={{
+                        startHandler: this.onStartHandler,
+                        endHandler: this.onEndHandler,
+                      }}
                     />
                   )}
                 />
@@ -62,6 +82,8 @@ class BenchmarkContainer extends Component {
           )}
         </Autosizer>
       </Container>
+    ) : (
+      <Result>ForceGraph took {time}ms to complete</Result>
     )
   }
 }

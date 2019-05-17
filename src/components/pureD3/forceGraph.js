@@ -1,38 +1,28 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import { select } from 'd3-selection'
 import { transition } from 'd3-transition'
+import { getCurvedLinkPath, getStraightLinkPath, LINK_TYPES } from 'lib/d3/linkPath'
 import {
-  getCurvedLinkPath,
-  getStraightLinkPath,
-  LINK_TYPES,
-  LinkTypePropType,
-} from 'lib/d3/linkPath'
-import { buildForceSimulation, encapsulateOutsideData, SIMULATION_TYPE } from 'lib/d3/forcePure'
+  buildForceSimulation,
+  encapsulateOutsideData,
+  ForceGraphDefaultProps,
+  ForceGraphProps,
+  SIMULATION_TYPE,
+} from 'lib/d3/forcePure'
 
 export class PureD3ForceGraph extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-    this.perf = performance.now()
-  }
-
   static propTypes = {
-    data: PropTypes.array,
-    links: PropTypes.array,
-    width: PropTypes.number,
-    height: PropTypes.number,
-    linkType: LinkTypePropType,
-    selNode: PropTypes.string,
-    selectNode: PropTypes.func,
+    ...ForceGraphProps,
   }
 
   static defaultProps = {
-    data: [],
-    links: [],
-    width: 500,
-    height: 500,
-    linkType: LINK_TYPES.STRAIGHT,
+    ...ForceGraphDefaultProps,
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {}
+    this.props.performance && this.props.performance.startHandler()
   }
 
   componentDidMount() {
@@ -84,7 +74,7 @@ export class PureD3ForceGraph extends Component {
   }
 
   onEnd = () => {
-    console.log('simulation has ended.', performance.now() - this.perf)
+    this.props.performance && this.props.performance.endHandler()
   }
 
   initGraph = () => {

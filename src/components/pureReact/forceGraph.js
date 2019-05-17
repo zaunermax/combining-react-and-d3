@@ -1,8 +1,8 @@
 import React, { Component, createRef } from 'react'
-import PropTypes from 'prop-types'
-import { LINK_TYPES, LinkTypePropType } from 'lib/d3/linkPath'
 import {
   buildForceSimulation,
+  ForceGraphDefaultProps,
+  ForceGraphProps,
   getLinkPaths,
   getNodePositions,
   linkId,
@@ -24,33 +24,12 @@ const G = styled.g`
 `
 
 export class PureReactForceGraph extends Component {
-  state = {
-    linkPositions: {},
-    nodePositions: {},
-  }
-
   static propTypes = {
-    data: PropTypes.array,
-    links: PropTypes.array,
-    width: PropTypes.number,
-    height: PropTypes.number,
-    linkType: LinkTypePropType,
-    selectNode: PropTypes.func,
-    forceOptions: PropTypes.shape({
-      radiusMultiplier: PropTypes.number,
-    }),
+    ...ForceGraphProps,
   }
 
   static defaultProps = {
-    mode: '',
-    data: [],
-    links: [],
-    width: 500,
-    height: 500,
-    linkType: LINK_TYPES.STRAIGHT,
-    forceOptions: {
-      radiusMultiplier: 1.2,
-    },
+    ...ForceGraphDefaultProps,
   }
 
   // Lifecycle
@@ -61,7 +40,11 @@ export class PureReactForceGraph extends Component {
     this.startSimulationTicks()
     this.linksRef = createRef()
     this.nodesRef = createRef()
-    this.perf = performance.now()
+    this.props.performance && this.props.performance.startHandler()
+    this.state = {
+      linkPositions: {},
+      nodePositions: {},
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -96,7 +79,7 @@ export class PureReactForceGraph extends Component {
   }
 
   onEnd = () => {
-    console.log('Pure react simulation has finished.', performance.now() - this.perf)
+    this.props.performance && this.props.performance.endHandler()
   }
 
   extractSimOptions = (overrideProps = null) => {
