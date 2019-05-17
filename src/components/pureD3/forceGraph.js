@@ -22,7 +22,6 @@ export class PureD3ForceGraph extends Component {
   constructor(props) {
     super(props)
     this.state = {}
-    this.props.performance && this.props.performance.startHandler()
   }
 
   componentDidMount() {
@@ -74,11 +73,13 @@ export class PureD3ForceGraph extends Component {
   }
 
   onEnd = () => {
-    this.props.performance && this.props.performance.endHandler()
+    this.props.onSimulationEnd()
   }
 
   initGraph = () => {
-    const { width, height } = this.props
+    const { width, height, onSimulationStart } = this.props
+
+    onSimulationStart()
 
     const svg = select(this.ref)
     svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')

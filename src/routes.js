@@ -7,7 +7,7 @@ export const BAR_CHART = '/barchart'
 export const BENCHMARK = '/bench/:nrOfNodes/:nrOfLinks'
 export const D3_BENCH = BENCHMARK + '/d3'
 export const HYBRID_BENCH = BENCHMARK + '/hybrid'
-export const PURE_BENCH = BENCHMARK + '/pure'
+export const PURE_BENCH = BENCHMARK + '/react'
 
 const DEFAULT = OVERVIEW
 

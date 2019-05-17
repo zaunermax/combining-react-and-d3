@@ -40,7 +40,6 @@ export class PureReactForceGraph extends Component {
     this.startSimulationTicks()
     this.linksRef = createRef()
     this.nodesRef = createRef()
-    this.props.performance && this.props.performance.startHandler()
     this.state = {
       linkPositions: {},
       nodePositions: {},
@@ -79,7 +78,7 @@ export class PureReactForceGraph extends Component {
   }
 
   onEnd = () => {
-    this.props.performance && this.props.performance.endHandler()
+    this.props.onSimulationEnd()
   }
 
   extractSimOptions = (overrideProps = null) => {
@@ -102,6 +101,7 @@ export class PureReactForceGraph extends Component {
   // Simulation
 
   initSimulation = () => {
+    this.props.onSimulationStart()
     const { simulation, updateSimulation } = buildForceSimulation({
       type: SIMULATION_TYPE.PURE_REACT,
       ...this.extractSimOptions(),

@@ -36,9 +36,7 @@ export class HybridForceGraph extends Component {
   constructor(props) {
     super(props)
     this.ref = createRef()
-    this.perf = performance.now()
     this.state = {}
-    this.props.performance && this.props.performance.startHandler()
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -58,6 +56,8 @@ export class HybridForceGraph extends Component {
   }
 
   initSimulation = () => {
+    this.props.onSimulationStart()
+
     const simOptions = this.extractSimOptions()
     const { simulation, updateSimulation } = buildForceSimulation({
       type: SIMULATION_TYPE.REACT_D3_HYBRID,
@@ -91,7 +91,7 @@ export class HybridForceGraph extends Component {
   }
 
   onEnd = () => {
-    this.props.performance && this.props.performance.endHandler()
+    this.props.onSimulationEnd()
   }
 
   extractSimOptions = () => {

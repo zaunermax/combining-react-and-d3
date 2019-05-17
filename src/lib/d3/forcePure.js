@@ -10,7 +10,7 @@ import {
 } from 'd3-force'
 import { event, select } from 'd3-selection'
 import { getCurvedLinkPath, LINK_TYPES, LinkTypePropType } from 'lib/d3/linkPath'
-import { pipe, switchCase } from 'lib/fpUtil'
+import { noop, pipe, switchCase } from 'lib/fpUtil'
 import PropTypes from 'prop-types'
 
 export const ForceGraphProps = Object.freeze({
@@ -21,10 +21,8 @@ export const ForceGraphProps = Object.freeze({
   linkType: LinkTypePropType,
   selNode: PropTypes.string,
   selectNode: PropTypes.func,
-  performance: PropTypes.shape({
-    startHandler: PropTypes.func.isRequired,
-    endHandler: PropTypes.func.isRequired,
-  }),
+  onSimulationStart: PropTypes.func,
+  onSimulationEnd: PropTypes.func,
 })
 
 export const ForceGraphDefaultProps = Object.freeze({
@@ -32,6 +30,8 @@ export const ForceGraphDefaultProps = Object.freeze({
   links: [],
   width: 500,
   height: 500,
+  onSimulationStart: noop,
+  onSimulationEnd: noop,
   linkType: LINK_TYPES.CURVED,
   forceOptions: {
     radiusMultiplier: 1.2,
