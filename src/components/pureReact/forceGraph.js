@@ -61,6 +61,7 @@ export class PureReactForceGraph extends Component {
     this.startSimulationTicks()
     this.linksRef = createRef()
     this.nodesRef = createRef()
+    this.perf = performance.now()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -95,7 +96,7 @@ export class PureReactForceGraph extends Component {
   }
 
   onEnd = () => {
-    console.log('Pure react simulation has finished.', performance.now())
+    console.log('Pure react simulation has finished.', performance.now() - this.perf)
   }
 
   extractSimOptions = (overrideProps = null) => {

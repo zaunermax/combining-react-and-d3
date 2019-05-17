@@ -25,8 +25,6 @@ const Container = styled.span`
 `
 
 export class HybridForceGraph extends Component {
-  state = { curSel: 'nix' }
-
   static propTypes = {
     data: PropTypes.array,
     links: PropTypes.array,
@@ -53,6 +51,8 @@ export class HybridForceGraph extends Component {
   constructor(props) {
     super(props)
     this.ref = createRef()
+    this.perf = performance.now()
+    this.state = {}
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -105,7 +105,7 @@ export class HybridForceGraph extends Component {
   }
 
   onEnd = () => {
-    console.log('Hybrid simulation has finished.', performance.now())
+    console.log('Hybrid simulation has finished.', performance.now() - this.perf)
   }
 
   extractSimOptions = () => {

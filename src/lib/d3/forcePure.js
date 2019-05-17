@@ -78,7 +78,6 @@ const applyGeneralForce = ({ simulation }) => {
   if (!simulation.force('center')) {
     simulation
       .force('center', forceCenter())
-      .force('center', forceCenter())
       .force('charge', forceManyBody().strength(-150))
       .force('forceX', forceX().strength(0.1))
       .force('forceY', forceY().strength(0.1))
@@ -101,7 +100,7 @@ const applyCollisionForce = ({ simulation, options: { radiusMultiplier, strength
   }
 }
 
-const applyNewNodes = ({ simulation, options: { nodes } }) => simulation.nodes(nodes)
+const applyNewNodeData = ({ simulation, options: { nodes } }) => simulation.nodes(nodes)
 
 const applyLinkForce = ({ simulation, options: { links } }) => {
   if (!simulation.force('link')) {
@@ -132,45 +131,83 @@ const applyTickHandler = ({ simulation, options: { tickHandler } }) => {
 }
 
 const applyDragHandlers = ({ simulation }) => {
-  updateDragAndDrop(simulation)
+  simulation.nodeSel.call(
+    drag()
+      .on('start', onDragStarted(simulation))
+      .on('drag', onDrag(simulation))
+      .on('end', onDragEnded(simulation)),
+  )
 }
 
 const applyOnEndHandler = ({ simulation, options: { endHandler } }) => {
   simulation.on('end', endHandler)
 }
 
+const initialSelect = (simulation, { ref }) => {
+  const selection = select(ref).select('g')
+
+  simulation.linkSel = selection.selectAll('path')
+  simulation.nodeSel = selection.selectAll('.node')
+}
+
+const applyUpdatePattern = (simulation, { nodes, links }) => {
+  simulation.nodeSel = simulation.nodeSel.data(nodes, ({ name }) => name)
+  simulation.linkSel = simulation.linkSel.data(
+    links,
+    ({ source: { name: s }, target: { name: t } }) => s + t,
+  )
+}
+
+const applyPureD3Selection = ({ simulation, options }) => {
+  !options.update && initialSelect(simulation, options)
+  applyUpdatePattern(simulation, options)
+}
+
 // -------------- Simulation -------------- //
 
-export const SIMULATION_TYPE = {
+export const SIMULATION_TYPE = Object.freeze({
   PURE_REACT: 'pureReact',
   PURE_D3: 'pureD3',
   REACT_D3_HYBRID: 'reactD3Hybrid',
-}
+})
 
 const pureD3Updater = pipeAppliers(
+  applyNewNodeData,
+  applyPureD3Selection,
+  applyTickHandler,
   applyGeneralForce,
-  applyNewNodes,
   applyLinkForce,
   applyCollisionForce,
-  applySimulationReheating,
+  applyDragHandlers,
   applyOnEndHandler,
+  applySimulationReheating,
 )
 
 const hybridUpdater = pipeAppliers(
-  applyNewNodes,
+  applyNewNodeData,
   applyNewRefs,
   applyTickHandler,
   applyGeneralForce,
   applyLinkForce,
   applyCollisionForce,
-  applySimulationReheating,
   applyDragHandlers,
   applyOnEndHandler,
+  applySimulationReheating,
+)
+
+const pureReactUpdater = pipeAppliers(
+  applyGeneralForce,
+  applyNewNodeData,
+  applyLinkForce,
+  applyCollisionForce,
+  applyOnEndHandler,
+  applySimulationReheating,
 )
 
 const getUpdaterFunction = switchCase({
-  [SIMULATION_TYPE.PURE_REACT]: pureD3Updater,
+  [SIMULATION_TYPE.PURE_D3]: pureD3Updater,
   [SIMULATION_TYPE.REACT_D3_HYBRID]: hybridUpdater,
+  [SIMULATION_TYPE.PURE_REACT]: pureReactUpdater,
 })(null)
 
 export const buildForceSimulation = (options) => {
@@ -178,15 +215,6 @@ export const buildForceSimulation = (options) => {
   const updateSimulation = getUpdaterFunction(options.type)
   updateSimulation({ simulation, options })
   return { simulation, updateSimulation }
-}
-
-export const updateDragAndDrop = (simulation) => {
-  simulation.nodeSel.call(
-    drag()
-      .on('start', onDragStarted(simulation))
-      .on('drag', onDrag(simulation))
-      .on('end', onDragEnded(simulation)),
-  )
 }
 
 export const getNodePositions = (simulation) =>

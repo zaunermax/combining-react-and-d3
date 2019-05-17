@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import styled from 'styled-components/macro'
 import Autosizer from 'react-virtualized-auto-sizer'
 import { LINK_TYPES } from 'lib/d3/linkPath'
-import { HybridForceGraph } from 'components/hybrid/forceGraph'
-import { generateNRandomNodes } from 'lib/rndHelpers'
-import { PureReactForceGraph } from 'components/pureReact/forceGraph'
+import { generateRandomNodeData } from 'lib/rndHelpers'
 import { D3_BENCH, HYBRID_BENCH, PURE_BENCH } from 'routes'
 import { Route, Switch } from 'react-router-dom'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
+import { HybridForceGraph } from 'components/hybrid/forceGraph'
+import { PureReactForceGraph } from 'components/pureReact/forceGraph'
 
 const Container = styled.div`
   width: 100vw;
@@ -15,13 +15,23 @@ const Container = styled.div`
   overflow: hidden;
 `
 
+const forceVariations = Object.freeze([
+  { path: D3_BENCH, ForceComponent: PureD3ForceGraph },
+  { path: HYBRID_BENCH, ForceComponent: HybridForceGraph },
+  { path: PURE_BENCH, ForceComponent: PureReactForceGraph },
+])
+
+const forceOptions = Object.freeze({
+  radiusMultiplier: 1.2,
+})
+
 class BenchmarkContainer extends Component {
   constructor(props) {
     super(props)
     const nrOfNodes = props.match.params.nrOfNodes || 0
     const nrOfLinks = props.match.params.nrOfLinks || 0
     this.state = {
-      ...generateNRandomNodes(nrOfNodes, nrOfLinks),
+      ...generateRandomNodeData(nrOfNodes, nrOfLinks),
     }
   }
 
@@ -32,42 +42,22 @@ class BenchmarkContainer extends Component {
         <Autosizer>
           {({ height, width }) => (
             <Switch>
-              <Route
-                path={D3_BENCH}
-                render={() => (
-                  <PureD3ForceGraph
-                    data={nodes}
-                    links={links}
-                    linkType={LINK_TYPES.CURVED}
-                    height={height}
-                    width={width}
-                  />
-                )}
-              />
-              <Route
-                path={HYBRID_BENCH}
-                render={() => (
-                  <HybridForceGraph
-                    data={nodes}
-                    links={links}
-                    linkType={LINK_TYPES.CURVED}
-                    height={height}
-                    width={width}
-                  />
-                )}
-              />
-              <Route
-                path={PURE_BENCH}
-                render={() => (
-                  <PureReactForceGraph
-                    data={nodes}
-                    links={links}
-                    linkType={LINK_TYPES.CURVED}
-                    height={height}
-                    width={width}
-                  />
-                )}
-              />
+              {forceVariations.map(({ path, ForceComponent }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  render={() => (
+                    <ForceComponent
+                      data={nodes}
+                      links={links}
+                      linkType={LINK_TYPES.CURVED}
+                      height={height}
+                      width={width}
+                      forceOptions={forceOptions}
+                    />
+                  )}
+                />
+              ))}
             </Switch>
           )}
         </Autosizer>

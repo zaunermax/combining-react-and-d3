@@ -1,27 +1,21 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {
-  forceManyBody,
-  forceX,
-  forceY,
-  forceCenter,
-  forceSimulation,
-  forceCollide,
-  forceLink,
-} from 'd3-force'
-import { event, select } from 'd3-selection'
+import { select } from 'd3-selection'
 import { transition } from 'd3-transition'
-import { drag } from 'd3-drag'
 import {
   getCurvedLinkPath,
   getStraightLinkPath,
   LINK_TYPES,
   LinkTypePropType,
 } from 'lib/d3/linkPath'
-import { encapsulateOutsideData } from 'lib/d3/forcePure'
+import { buildForceSimulation, encapsulateOutsideData, SIMULATION_TYPE } from 'lib/d3/forcePure'
 
 export class PureD3ForceGraph extends Component {
-  state = {}
+  constructor(props) {
+    super(props)
+    this.state = {}
+    this.perf = performance.now()
+  }
 
   static propTypes = {
     data: PropTypes.array,
@@ -56,6 +50,25 @@ export class PureD3ForceGraph extends Component {
     this.updateGraph()
   }
 
+  extractSimOptions = (additional = {}) => {
+    const { forceOptions } = this.props
+    const { data: nodes, links } = this.state
+    return {
+      ...forceOptions,
+      ...additional,
+      nodes: nodes || [],
+      links: links || [],
+      tickHandler: this.ticked,
+      endHandler: this.onEnd,
+      ref: this.ref,
+    }
+  }
+
+  extractSimUpdateOptions = () => ({
+    simulation: this.simulation,
+    options: this.extractSimOptions({ update: true }),
+  })
+
   updateDimensions = () => {
     const { height, width } = this.props
     select(this.ref)
@@ -64,118 +77,75 @@ export class PureD3ForceGraph extends Component {
   }
 
   ticked = () => {
-    this.node.attr('cx', ({ x }) => x).attr('cy', ({ y }) => y)
-    this.link.attr('d', (d) =>
+    this.simulation.nodeSel.attr('cx', ({ x }) => x).attr('cy', ({ y }) => y)
+    this.simulation.linkSel.attr('d', (d) =>
       this.props.linkType === LINK_TYPES.CURVED ? getCurvedLinkPath(d) : getStraightLinkPath(d),
     )
   }
 
-  onDragStarted = (d) => {
-    d.fx = d.x
-    d.fy = d.y
-  }
-
-  onDrag = (d) => {
-    d.fx = event.x
-    d.fy = event.y
-  }
-
-  onDragEnded = (d) => {
-    d.fx = null
-    d.fy = null
+  onEnd = () => {
+    console.log('simulation has ended.', performance.now() - this.perf)
   }
 
   initGraph = () => {
     const { width, height } = this.props
-    const { data } = this.state
 
-    // save the simulation in component so it is updatable
-    this.simulation = forceSimulation(data)
-      .force('charge', forceManyBody().strength(-150))
-      .force('forceX', forceX().strength(0.1))
-      .force('forceY', forceY().strength(0.1))
-      .force('center', forceCenter())
-      .alphaTarget(1)
-      .on('tick', this.ticked)
+    const svg = select(this.ref)
+    svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
-    let svg = select(this.ref)
+    const simOptions = this.extractSimOptions()
+    const { simulation, updateSimulation } = buildForceSimulation({
+      type: SIMULATION_TYPE.PURE_D3,
+      ...simOptions,
+    })
 
-    let g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
+    this.simulation = simulation
+    this.updateSimulation = updateSimulation
 
-    this.link = g.append('g').selectAll('path')
-    this.node = g.append('g').selectAll('.node')
-
-    this.updateGraph()
+    this.updateGraph(true)
   }
 
-  updateGraph = () => {
-    const { data, links } = this.state
+  updateGraph = (omitUpdateCall = false) => {
+    !omitUpdateCall && this.updateSimulation(this.extractSimUpdateOptions())
 
     // transition
     let t = transition().duration(750)
-    // Apply the general update pattern to the nodes.
-    this.node = this.node.data(data, ({ name }) => name)
-    this.link = this.link.data(links, ({ source: { name: s }, target: { name: t } }) => s + t)
 
-    this.link.exit().remove()
+    this.simulation.linkSel.exit().remove()
 
-    this.link = this.link
+    this.simulation.linkSel = this.simulation.linkSel
       .enter()
       .append('path')
       .attr('stroke', '#45b29d')
       .attr('fill', 'none')
       .attr('id', ({ source: { name: s }, target: { name: t } }) => s + t)
-      .merge(this.link)
+      .merge(this.simulation.linkSel)
 
-    this.node
+    this.simulation.nodeSel
       .exit()
       .style('fill', '#b26745')
       .transition(t)
       .attr('r', 1e-6)
       .remove()
 
-    this.node
+    this.simulation.nodeSel
       .transition(t)
       .style('fill', '#3a403d')
       .attr('r', ({ size }) => size)
 
-    this.node = this.node
+    this.simulation.nodeSel = this.simulation.nodeSel
       .enter()
       .append('circle')
       .style('fill', '#45b29d')
       .attr('r', ({ size }) => size)
       .attr('id', ({ name }) => name)
-      .merge(this.node)
-
-    // Update and restart the simulation.
-    this.simulation
-      .nodes(data)
-      .force(
-        'collide',
-        forceCollide()
-          .strength(1)
-          .radius(({ size }) => size + 10)
-          .iterations(1),
-      )
-      .force(
-        'link',
-        forceLink(this.state.links)
-          .distance(({ source: { size: s }, target: { size: t } }) => (s > t ? s + 10 : t + 10))
-          .strength(0.1)
-          .id((d) => d.name),
-      )
-
-    this.node.call(
-      drag()
-        .on('start', this.onDragStarted)
-        .on('drag', this.onDrag)
-        .on('end', this.onDragEnded),
-    )
+      .merge(this.simulation.nodeSel)
   }
 
   setRef = (ref) => (this.ref = ref)
 
   render() {
+    console.log('I only render once!')
     const { width, height } = this.props
     return <svg ref={this.setRef} width={width} height={height} />
   }

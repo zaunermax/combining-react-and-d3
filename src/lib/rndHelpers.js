@@ -10,7 +10,7 @@ export const createRndNode = () => ({
   size: randBetween(5, 50),
 })
 
-export const findSameLink = (key) => ({ source: { name: s }, target: { name: t } }) =>
+export const isSameLink = (key) => ({ source: { name: s }, target: { name: t } }) =>
   s + t === key || t + s === key
 
 export const randomizeLinks = (data = [], nrOfLinks) =>
@@ -23,7 +23,7 @@ export const randomizeLinks = (data = [], nrOfLinks) =>
       const d1 = data[firstIdx]
       const d2 = data[secondIdx]
 
-      return firstIdx !== secondIdx && !acc.find(findSameLink(d1.name + d2.name))
+      return firstIdx !== secondIdx && !acc.find(isSameLink(d1.name + d2.name))
         ? acc.concat({
             source: data[firstIdx],
             target: data[secondIdx],
@@ -32,7 +32,7 @@ export const randomizeLinks = (data = [], nrOfLinks) =>
     }, [])
     .filter(Boolean)
 
-export const generateNRandomNodes = (nrOfNodes, nrOfLinks) => {
+export const generateRandomNodeData = (nrOfNodes, nrOfLinks) => {
   const nodes = Array.from(Array(+nrOfNodes), () => createRndNode())
   const links = randomizeLinks(nodes, +nrOfLinks)
   return { nodes, links }
