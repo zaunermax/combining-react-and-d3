@@ -16,6 +16,23 @@ const Container = styled.div`
   overflow: hidden;
 `
 
+const IterationCnt = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+`
+
+const NR_ITERATIONS = 3
+
+const TestIterations = Object.freeze([
+  { nrOfNodes: 10, nrOfLinks: 5 },
+  { nrOfNodes: 50, nrOfLinks: 30 },
+  { nrOfNodes: 100, nrOfLinks: 50 },
+  { nrOfNodes: 250, nrOfLinks: 150 },
+  { nrOfNodes: 500, nrOfLinks: 250 },
+  { nrOfNodes: 1000, nrOfLinks: 500 },
+])
+
 const forceVariations = Object.freeze([
   { path: D3_BENCH, ForceComponent: PureD3ForceGraph },
   { path: HYBRID_BENCH, ForceComponent: HybridForceGraph },
@@ -26,15 +43,16 @@ const forceOptions = Object.freeze({
   radiusMultiplier: 1.2,
 })
 
-const NR_ITERATIONS = 3
+const generateRandData = ({ nrOfNodes, nrOfLinks }) => generateRandomNodeData(nrOfNodes, nrOfLinks)
 
 class BenchmarkContainer extends Component {
   constructor(props) {
     super(props)
-    const nrOfNodes = props.match.params.nrOfNodes || 0
-    const nrOfLinks = props.match.params.nrOfLinks || 0
+    const currentIteration = 0
     this.state = {
-      ...generateRandomNodeData(nrOfNodes, nrOfLinks),
+      ...generateRandData(TestIterations[currentIteration]),
+      currentIteration,
+      iterationCnt: 1,
       benchmarkRunning: true,
       iterations: [],
     }
@@ -47,15 +65,27 @@ class BenchmarkContainer extends Component {
       iterations: { length: oldLength },
     },
   ) {
-    this.setState(({ iterations: { length }, benchmarkRunning }) => {
-      return oldRunningState !== benchmarkRunning &&
-        length < NR_ITERATIONS &&
-        oldRunningState === true &&
-        benchmarkRunning === false &&
-        oldLength !== length
-        ? { benchmarkRunning: true }
-        : null
-    })
+    const {
+      iterations: { length },
+      benchmarkRunning,
+    } = this.state
+
+    oldRunningState === true &&
+      benchmarkRunning === false &&
+      length < TestIterations.length * NR_ITERATIONS &&
+      setTimeout(() => {
+        this.setState(({ currentIteration, iterationCnt }) => {
+          const newCurrIt = iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration
+          const newItCnt = iterationCnt < NR_ITERATIONS ? iterationCnt + 1 : 1
+
+          return {
+            ...generateRandData(TestIterations[newCurrIt]),
+            benchmarkRunning: true,
+            iterationCnt: newItCnt,
+            currentIteration: newCurrIt,
+          }
+        })
+      }, 500)
   }
 
   onStartHandler = () => {
@@ -75,11 +105,31 @@ class BenchmarkContainer extends Component {
     }))
   }
 
+  renderForceComponent = ({ ForceComponent, height, width }) => () => {
+    const { nodes = [], links = [] } = this.state
+    return (
+      <ForceComponent
+        data={nodes}
+        links={links}
+        linkType={LINK_TYPES.CURVED}
+        height={height}
+        width={width}
+        forceOptions={forceOptions}
+        onSimulationStart={this.onStartHandler}
+        onSimulationEnd={this.onEndHandler}
+      />
+    )
+  }
+
   render() {
-    const { nodes = [], links = [], benchmarkRunning, iterations } = this.state
+    const { benchmarkRunning, iterations, currentIteration, iterationCnt } = this.state
 
     return benchmarkRunning ? (
       <Container>
+        <IterationCnt>
+          <div>Current iteration: {currentIteration}</div>
+          <div>Iteration cnt: {iterationCnt}</div>
+        </IterationCnt>
         <Autosizer>
           {({ height, width }) => (
             <Switch>
@@ -87,31 +137,25 @@ class BenchmarkContainer extends Component {
                 <Route
                   key={path}
                   path={path}
-                  render={() => (
-                    <ForceComponent
-                      data={nodes}
-                      links={links}
-                      linkType={LINK_TYPES.CURVED}
-                      height={height}
-                      width={width}
-                      forceOptions={forceOptions}
-                      onSimulationStart={this.onStartHandler}
-                      onSimulationEnd={this.onEndHandler}
-                    />
-                  )}
+                  render={this.renderForceComponent({ ForceComponent, height, width })}
                 />
               ))}
             </Switch>
           )}
         </Autosizer>
       </Container>
-    ) : iterations.length < NR_ITERATIONS ? null : (
-      iterations.map(({ time, avgFPS }, idx) => (
-        <div key={idx}>
-          <div>Time: {time}</div>
-          <div>FPS: {avgFPS}</div>
-        </div>
-      ))
+    ) : iterations.length < TestIterations.length * NR_ITERATIONS ? (
+      <div>Restarting...</div>
+    ) : (
+      <>
+        <div>Nr of iterations: {iterations.length}</div>
+        {iterations.map(({ time, avgFPS }, idx) => (
+          <div key={idx}>
+            <div>Time: {time}</div>
+            <div>FPS: {avgFPS}</div>
+          </div>
+        ))}
+      </>
     )
   }
 }
