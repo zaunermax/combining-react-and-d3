@@ -73,19 +73,17 @@ class BenchmarkContainer extends Component {
     oldRunningState === true &&
       benchmarkRunning === false &&
       length < TestIterations.length * NR_ITERATIONS &&
-      setTimeout(() => {
-        this.setState(({ currentIteration, iterationCnt }) => {
-          const newCurrIt = iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration
-          const newItCnt = iterationCnt < NR_ITERATIONS ? iterationCnt + 1 : 1
+      this.setState(({ currentIteration, iterationCnt }) => {
+        const newCurrIt = iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration
+        const newItCnt = iterationCnt < NR_ITERATIONS ? iterationCnt + 1 : 1
 
-          return {
-            ...generateRandData(TestIterations[newCurrIt]),
-            benchmarkRunning: true,
-            iterationCnt: newItCnt,
-            currentIteration: newCurrIt,
-          }
-        })
-      }, 500)
+        return {
+          ...generateRandData(TestIterations[newCurrIt]),
+          benchmarkRunning: true,
+          iterationCnt: newItCnt,
+          currentIteration: newCurrIt,
+        }
+      })
   }
 
   onStartHandler = () => {
