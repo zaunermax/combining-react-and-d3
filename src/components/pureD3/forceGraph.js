@@ -19,6 +19,8 @@ export class PureD3ForceGraph extends Component {
     ...ForceGraphDefaultProps,
   }
 
+  static displayName = 'PureD3ForceGraph'
+
   constructor(props) {
     super(props)
     this.state = {}

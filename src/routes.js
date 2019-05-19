@@ -1,9 +1,9 @@
 import React, { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import { NotFound } from 'pages/404'
 
 export const ROOT = '/'
 export const OVERVIEW = '/overview'
-export const BAR_CHART = '/barchart'
 export const BENCHMARK = '/bench'
 export const D3_BENCH = BENCHMARK + '/d3'
 export const HYBRID_BENCH = BENCHMARK + '/hybrid'
@@ -11,8 +11,7 @@ export const PURE_BENCH = BENCHMARK + '/react'
 
 const DEFAULT = OVERVIEW
 
-const OverViewPage = lazy(() => import('./pages/overview'))
-const AsyncBarChartExample = lazy(() => import('./pages/barChart'))
+const AsyncOverview = lazy(() => import('./pages/overview'))
 const AsyncBenchmark = lazy(() => import('./pages/benchmark'))
 
 const LoadingMessage = () => `Loading...`
@@ -21,13 +20,9 @@ export const Routes = () => (
   <Suspense fallback={<LoadingMessage />}>
     <Switch>
       <Redirect from={ROOT} to={DEFAULT} exact />
-      <Route path={BAR_CHART}>
-        <AsyncBarChartExample />
-      </Route>
-      <Route path={OVERVIEW}>
-        <OverViewPage />
-      </Route>
-      <Route path={BENCHMARK} component={(props) => <AsyncBenchmark {...props} />} />
+      <Route path={OVERVIEW} render={(props) => <AsyncOverview {...props} />} />
+      <Route path={BENCHMARK} render={(props) => <AsyncBenchmark {...props} />} />
+      <Route render={NotFound} />
     </Switch>
   </Suspense>
 )

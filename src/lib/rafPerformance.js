@@ -63,7 +63,7 @@ export class RequestAnimationFramePerformance {
     return this.#runtime
   }
 
-  getNHighestFrameTimes = (n) => {
-    return [...this.#frameTimes].sort(sortDescending).slice(0, n)
+  get highestFrameTime() {
+    return [...this.#frameTimes].sort(sortDescending)[0] || 0
   }
 }

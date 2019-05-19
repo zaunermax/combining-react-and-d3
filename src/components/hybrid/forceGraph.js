@@ -33,6 +33,8 @@ export class HybridForceGraph extends Component {
     ...ForceGraphDefaultProps,
   }
 
+  static displayName = 'HybridForceGraph'
+
   constructor(props) {
     super(props)
     this.ref = createRef()

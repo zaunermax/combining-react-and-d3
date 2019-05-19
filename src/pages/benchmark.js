@@ -4,7 +4,7 @@ import Autosizer from 'react-virtualized-auto-sizer'
 import { LINK_TYPES } from 'lib/d3/linkPath'
 import { generateRandomNodeData } from 'lib/rndHelpers'
 import { D3_BENCH, HYBRID_BENCH, PURE_BENCH } from 'routes'
-import { Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { PureReactForceGraph } from 'components/pureReact/forceGraph'
@@ -46,6 +46,30 @@ const forceOptions = Object.freeze({
 
 const generateRandData = ({ nrOfNodes, nrOfLinks }) => generateRandomNodeData(nrOfNodes, nrOfLinks)
 
+const calcNewItData = ({ iterationCnt, currentIteration }) => ({
+  newCurrIt: iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration,
+  newItCnt: iterationCnt < NR_ITERATIONS ? iterationCnt + 1 : 1,
+})
+
+const shouldDoNewIteration = (
+  { benchmarkRunning: oldRunning },
+  { benchmarkRunning: newRunning, benchmarkFinished },
+  { newCurrIt },
+) =>
+  oldRunning === true &&
+  newRunning === false &&
+  newCurrIt < TestIterations.length &&
+  !benchmarkFinished
+
+const getNewIterationData = ({ newCurrIt, newItCnt }) => ({
+  ...generateRandData(TestIterations[newCurrIt]),
+  benchmarkRunning: true,
+  iterationCnt: newItCnt,
+  currentIteration: newCurrIt,
+})
+
+const iterationsFinished = ({ newCurrIt }) => newCurrIt >= TestIterations.length
+
 class BenchmarkContainer extends Component {
   constructor(props) {
     super(props)
@@ -55,36 +79,22 @@ class BenchmarkContainer extends Component {
       currentIteration,
       iterationCnt: 1,
       benchmarkRunning: true,
-      iterations: [],
+      iterations: Array(TestIterations.length).fill(Array(NR_ITERATIONS)),
     }
   }
 
-  componentDidUpdate(
-    _,
-    {
-      benchmarkRunning: oldRunningState,
-      iterations: { length: oldLength },
-    },
-  ) {
-    const {
-      iterations: { length },
-      benchmarkRunning,
-    } = this.state
+  componentDidUpdate(_, oldState) {
+    this.setState((state) => {
+      const itData = calcNewItData(state)
 
-    oldRunningState === true &&
-      benchmarkRunning === false &&
-      length < TestIterations.length * NR_ITERATIONS &&
-      this.setState(({ currentIteration, iterationCnt }) => {
-        const newCurrIt = iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration
-        const newItCnt = iterationCnt < NR_ITERATIONS ? iterationCnt + 1 : 1
-
-        return {
-          ...generateRandData(TestIterations[newCurrIt]),
-          benchmarkRunning: true,
-          iterationCnt: newItCnt,
-          currentIteration: newCurrIt,
-        }
-      })
+      return state.benchmarkFinished
+        ? null
+        : shouldDoNewIteration(oldState, state, itData)
+        ? getNewIterationData(itData)
+        : iterationsFinished(itData)
+        ? { benchmarkFinished: true }
+        : null
+    })
   }
 
   onStartHandler = () => {
@@ -94,15 +104,18 @@ class BenchmarkContainer extends Component {
 
   onEndHandler = () => {
     this.rafp.end()
-    this.setState(({ iterations }) => ({
-      benchmarkRunning: false,
-      iterations: iterations.concat({
+    this.setState(({ iterations, currentIteration, iterationCnt }) => {
+      iterations[currentIteration][iterationCnt - 1] = {
         time: this.rafp.runtime,
         avgFPS: this.rafp.averageFPS,
         avgFrameTime: this.rafp.avgFrameTime,
-        highestFrameTimes: this.rafp.getNHighestFrameTimes(5),
-      }),
-    }))
+        highestFrameTime: this.rafp.highestFrameTime,
+      }
+      return {
+        benchmarkRunning: false,
+        iterations,
+      }
+    })
   }
 
   getForceComponentRenderer = ({ ForceComponent, height, width }) => () => {
@@ -122,7 +135,13 @@ class BenchmarkContainer extends Component {
   }
 
   render() {
-    const { benchmarkRunning, iterations, currentIteration, iterationCnt } = this.state
+    const {
+      benchmarkRunning,
+      iterations,
+      currentIteration,
+      iterationCnt,
+      benchmarkFinished,
+    } = this.state
 
     return benchmarkRunning ? (
       <Container>
@@ -138,21 +157,28 @@ class BenchmarkContainer extends Component {
                   key={path}
                   path={path}
                   render={this.getForceComponentRenderer({ ForceComponent, height, width })}
+                  exact
                 />
               ))}
+              <Redirect to={D3_BENCH} />
             </Switch>
           )}
         </Autosizer>
       </Container>
-    ) : iterations.length < TestIterations.length * NR_ITERATIONS ? null : (
+    ) : !benchmarkFinished ? null : (
       <>
         <div>Total number of iterations: {iterations.length}</div>
-        {iterations.map(({ time, avgFPS, avgFrameTime, highestFrameTimes }, idx) => (
+        {iterations.map((it, idx) => (
           <div key={idx}>
-            <div>Time: {time}</div>
-            <div>Avg FPS: {avgFPS}</div>
-            <div>Avg frame time: {avgFrameTime}</div>
-            <div>Highest frame times: {highestFrameTimes.join(', ')}</div>
+            <div>Iteration: </div>
+            {it.map(({ time, avgFPS, avgFrameTime, highestFrameTime }, idx) => (
+              <div key={idx}>
+                <div>Time: {Math.round(time)}ms</div>
+                <div>Avg FPS: {Math.round(avgFPS)}</div>
+                <div>Avg frame time: {Math.round(avgFrameTime)}ms</div>
+                <div>Highest frame time: {Math.round(highestFrameTime)}ms</div>
+              </div>
+            ))}
           </div>
         ))}
       </>

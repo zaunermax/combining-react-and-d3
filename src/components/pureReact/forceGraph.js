@@ -32,6 +32,8 @@ export class PureReactForceGraph extends Component {
     ...ForceGraphDefaultProps,
   }
 
+  static displayName = 'PureReactForceGraph'
+
   // Lifecycle
 
   constructor(props) {
