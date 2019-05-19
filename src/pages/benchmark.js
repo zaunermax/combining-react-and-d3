@@ -8,7 +8,7 @@ import { Route, Switch } from 'react-router-dom'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { PureReactForceGraph } from 'components/pureReact/forceGraph'
-import { rafp } from 'lib/rafPerformance'
+import { RequestAnimationFramePerformance } from 'lib/rafPerformance'
 
 const Container = styled.div`
   width: 100vw;
@@ -18,6 +18,7 @@ const Container = styled.div`
 
 const IterationCnt = styled.div`
   position: fixed;
+  z-index: 1;
   top: 0;
   left: 0;
 `
@@ -26,11 +27,11 @@ const NR_ITERATIONS = 3
 
 const TestIterations = Object.freeze([
   { nrOfNodes: 10, nrOfLinks: 5 },
-  { nrOfNodes: 50, nrOfLinks: 30 },
-  { nrOfNodes: 100, nrOfLinks: 50 },
-  { nrOfNodes: 250, nrOfLinks: 150 },
-  { nrOfNodes: 500, nrOfLinks: 250 },
-  { nrOfNodes: 1000, nrOfLinks: 500 },
+  //{ nrOfNodes: 50, nrOfLinks: 30 },
+  //{ nrOfNodes: 100, nrOfLinks: 50 },
+  //{ nrOfNodes: 250, nrOfLinks: 150 },
+  //{ nrOfNodes: 500, nrOfLinks: 250 },
+  //{ nrOfNodes: 1000, nrOfLinks: 500 },
 ])
 
 const forceVariations = Object.freeze([
@@ -87,9 +88,8 @@ class BenchmarkContainer extends Component {
   }
 
   onStartHandler = () => {
-    this.rafp = rafp()
+    this.rafp = new RequestAnimationFramePerformance()
     this.rafp.start()
-    this.perf = performance.now()
   }
 
   onEndHandler = () => {
@@ -97,13 +97,15 @@ class BenchmarkContainer extends Component {
     this.setState(({ iterations }) => ({
       benchmarkRunning: false,
       iterations: iterations.concat({
-        time: performance.now() - this.perf,
-        avgFPS: this.rafp.getAverageFPS(),
+        time: this.rafp.runtime,
+        avgFPS: this.rafp.averageFPS,
+        avgFrameTime: this.rafp.avgFrameTime,
+        highestFrameTimes: this.rafp.getNHighestFrameTimes(5),
       }),
     }))
   }
 
-  renderForceComponent = ({ ForceComponent, height, width }) => () => {
+  getForceComponentRenderer = ({ ForceComponent, height, width }) => () => {
     const { nodes = [], links = [] } = this.state
     return (
       <ForceComponent
@@ -125,7 +127,7 @@ class BenchmarkContainer extends Component {
     return benchmarkRunning ? (
       <Container>
         <IterationCnt>
-          <div>Current iteration: {currentIteration}</div>
+          <div>Current iteration: {currentIteration + 1}</div>
           <div>Iteration cnt: {iterationCnt}</div>
         </IterationCnt>
         <Autosizer>
@@ -135,22 +137,22 @@ class BenchmarkContainer extends Component {
                 <Route
                   key={path}
                   path={path}
-                  render={this.renderForceComponent({ ForceComponent, height, width })}
+                  render={this.getForceComponentRenderer({ ForceComponent, height, width })}
                 />
               ))}
             </Switch>
           )}
         </Autosizer>
       </Container>
-    ) : iterations.length < TestIterations.length * NR_ITERATIONS ? (
-      <div>Restarting...</div>
-    ) : (
+    ) : iterations.length < TestIterations.length * NR_ITERATIONS ? null : (
       <>
-        <div>Nr of iterations: {iterations.length}</div>
-        {iterations.map(({ time, avgFPS }, idx) => (
+        <div>Total number of iterations: {iterations.length}</div>
+        {iterations.map(({ time, avgFPS, avgFrameTime, highestFrameTimes }, idx) => (
           <div key={idx}>
             <div>Time: {time}</div>
-            <div>FPS: {avgFPS}</div>
+            <div>Avg FPS: {avgFPS}</div>
+            <div>Avg frame time: {avgFrameTime}</div>
+            <div>Highest frame times: {highestFrameTimes.join(', ')}</div>
           </div>
         ))}
       </>

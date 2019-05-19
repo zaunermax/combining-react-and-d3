@@ -1,113 +1,69 @@
-export const rafp = () => {
-  const FPSlist = []
-  const notes = []
-  const support = !!window.requestAnimationFrame
+const addUp = (total, curr) => total + curr
+const sortDescending = (a, b) => b - a
 
-  let cycleStart
-  let currentFPS
-  let latestFPS
-  let currentNotes = []
-  let highestFPS = 0
-  let running = false
-  let maxDetections = 60
+export class RequestAnimationFramePerformance {
+  #FPSList = []
+  #frameTimes = []
+  #cycleStart
+  #currentFPS
+  #latestFPS
+  #highestFPS = 0
+  #running = false
+  #lastFrameTime
+  #runtime
 
-  function startNewCycle() {
-    currentFPS = 0
-    currentNotes = []
-    cycleStart = performance.now()
-    requestAnimationFrame(cycle)
+  #startNewCycle = () => {
+    this.#currentFPS = 0
+    this.#cycleStart = performance.now()
+    this.#lastFrameTime = this.#cycleStart
+    requestAnimationFrame(this.#cycle)
   }
 
-  function cycle() {
-    if (running) {
-      const currentTime = performance.now()
-      if (currentTime - cycleStart < 1000) {
-        currentFPS += 1
-        requestAnimationFrame(cycle)
-      } else {
-        latestFPS = currentFPS
-        highestFPS = Math.max(currentFPS, highestFPS)
-        FPSlist.unshift(currentFPS)
-        notes.unshift(currentNotes.join(', '))
-        startNewCycle()
-      }
+  #cycle = () => {
+    if (!this.#running) return
+
+    const currentTime = performance.now()
+
+    this.#frameTimes.push(currentTime - this.#lastFrameTime)
+
+    if (currentTime - this.#cycleStart < 1000) {
+      this.#currentFPS += 1
+      this.#lastFrameTime = currentTime
+      requestAnimationFrame(this.#cycle)
+    } else {
+      this.#latestFPS = this.#currentFPS
+      this.#highestFPS = Math.max(this.#currentFPS, this.#highestFPS)
+      this.#FPSList.unshift(this.#currentFPS)
+      this.#startNewCycle()
     }
   }
 
-  function chop() {
-    const copy = []
-    for (let i = 0; i < maxDetections && FPSlist[i]; i += 1) {
-      copy.push(FPSlist[i])
-    }
-    return copy
+  start = () => {
+    this.#running = true
+    this.#runtime = performance.now()
+    this.#startNewCycle()
   }
 
-  return {
-    start: function() {
-      if (support) {
-        running = true
-        startNewCycle()
-      } else {
-        this.getCurrentFPS = this.getAverageFPS = this.getMedianFPS = function() {
-          return 'not supported'
-        }
-      }
-    },
-    end: function() {
-      running = false
-    },
-    supported: support,
-    setPeriod: function(number) {
-      maxDetections = number * 1 || 60
-    },
-    addNote: function(note) {
-      if (running) {
-        currentNotes.push(note)
-      }
-    },
-    getCurrentFPS: function() {
-      return running ? latestFPS : 'not running'
-    },
-    getAverageFPS: function() {
-      const data = chop()
-      let totalTime = 0
+  end = () => {
+    this.#running = false
+    this.#runtime = performance.now() - this.#runtime
+  }
 
-      for (let i = 0; i < data.length; i += 1) {
-        totalTime += data[i]
-      }
+  get averageFPS() {
+    const totalFPS = [...this.#FPSList].reduce(addUp, 0)
+    return Math.round(totalFPS / this.#FPSList.length)
+  }
 
-      return Math.round(totalTime / data.length)
-    },
-    getMedianFPS: function() {
-      const data = chop()
+  get avgFrameTime() {
+    const totalTime = this.#frameTimes.reduce(addUp, 0)
+    return Math.round(totalTime / this.#frameTimes.length)
+  }
 
-      data.sort(function(a, b) {
-        return a - b
-      })
+  get runtime() {
+    return this.#runtime
+  }
 
-      if (data.length === 1) {
-        return data[0]
-      }
-
-      const middle = data.length / 2
-
-      if (middle % 1) {
-        return Math.round((data[middle - 0.5] + data[middle + 0.5]) / 2)
-      } else {
-        return data[middle]
-      }
-    },
-    getFullDump: function() {
-      const dump = []
-
-      for (let i = FPSlist.length - 1; i >= 0; i -= 1) {
-        dump.push({
-          fps: FPSlist[i],
-          notes: notes[i],
-        })
-      }
-
-      return dump
-    },
+  getNHighestFrameTimes = (n) => {
+    return [...this.#frameTimes].sort(sortDescending).slice(0, n)
   }
 }
