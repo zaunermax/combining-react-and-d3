@@ -9,6 +9,7 @@ import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { PureReactForceGraph } from 'components/pureReact/forceGraph'
 import { RequestAnimationFramePerformance } from 'lib/rafPerformance'
+import BenchmarkResults from 'components/performance/benchmarkResult'
 
 const Container = styled.div`
   width: 100vw;
@@ -27,11 +28,11 @@ const NR_ITERATIONS = 3
 
 const TestIterations = Object.freeze([
   { nrOfNodes: 10, nrOfLinks: 5 },
-  //{ nrOfNodes: 50, nrOfLinks: 30 },
-  //{ nrOfNodes: 100, nrOfLinks: 50 },
-  //{ nrOfNodes: 250, nrOfLinks: 150 },
-  //{ nrOfNodes: 500, nrOfLinks: 250 },
-  //{ nrOfNodes: 1000, nrOfLinks: 500 },
+  { nrOfNodes: 50, nrOfLinks: 30 },
+  { nrOfNodes: 100, nrOfLinks: 100 },
+  { nrOfNodes: 250, nrOfLinks: 150 },
+  { nrOfNodes: 500, nrOfLinks: 250 },
+  { nrOfNodes: 1000, nrOfLinks: 500 },
 ])
 
 const forceVariations = Object.freeze([
@@ -79,7 +80,7 @@ class BenchmarkContainer extends Component {
       currentIteration,
       iterationCnt: 1,
       benchmarkRunning: true,
-      iterations: Array(TestIterations.length).fill(Array(NR_ITERATIONS)),
+      iterations: Array.from(Array(TestIterations.length), () => Array(NR_ITERATIONS)),
     }
   }
 
@@ -166,22 +167,7 @@ class BenchmarkContainer extends Component {
         </Autosizer>
       </Container>
     ) : !benchmarkFinished ? null : (
-      <>
-        <div>Total number of iterations: {iterations.length}</div>
-        {iterations.map((it, idx) => (
-          <div key={idx}>
-            <div>Iteration: </div>
-            {it.map(({ time, avgFPS, avgFrameTime, highestFrameTime }, idx) => (
-              <div key={idx}>
-                <div>Time: {Math.round(time)}ms</div>
-                <div>Avg FPS: {Math.round(avgFPS)}</div>
-                <div>Avg frame time: {Math.round(avgFrameTime)}ms</div>
-                <div>Highest frame time: {Math.round(highestFrameTime)}ms</div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </>
+      <BenchmarkResults iterations={iterations} />
     )
   }
 }
