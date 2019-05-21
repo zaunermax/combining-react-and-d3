@@ -8,7 +8,7 @@ import {
   ForceGraphDefaultProps,
   ForceGraphProps,
   SIMULATION_TYPE,
-} from 'lib/d3/forcePure'
+} from 'lib/d3/force'
 
 export class PureD3ForceGraph extends Component {
   static propTypes = {

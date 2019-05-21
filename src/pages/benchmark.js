@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components/macro'
 import Autosizer from 'react-virtualized-auto-sizer'
 import { LINK_TYPES } from 'lib/d3/linkPath'
-import { generateRandomNodeData } from 'lib/rndHelpers'
+import { generateRandomNodeData, reseed } from 'lib/rndHelpers'
 import { D3_BENCH, HYBRID_BENCH, PURE_BENCH } from 'routes'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
@@ -24,14 +24,14 @@ const IterationCnt = styled.div`
   left: 0;
 `
 
-const NR_ITERATIONS = 3
+const NR_ITERATIONS = 1
 
 const TestIterations = Object.freeze([
   { nrOfNodes: 10, nrOfLinks: 5 },
-  { nrOfNodes: 50, nrOfLinks: 30 },
+  //{ nrOfNodes: 50, nrOfLinks: 30 },
   { nrOfNodes: 100, nrOfLinks: 100 },
-  { nrOfNodes: 250, nrOfLinks: 150 },
-  { nrOfNodes: 500, nrOfLinks: 250 },
+  //{ nrOfNodes: 250, nrOfLinks: 150 },
+  //{ nrOfNodes: 500, nrOfLinks: 250 },
   { nrOfNodes: 1000, nrOfLinks: 500 },
 ])
 
@@ -45,7 +45,10 @@ const forceOptions = Object.freeze({
   radiusMultiplier: 1.2,
 })
 
-const generateRandData = ({ nrOfNodes, nrOfLinks }) => generateRandomNodeData(nrOfNodes, nrOfLinks)
+const generateRandData = ({ nrOfNodes, nrOfLinks }) => {
+  reseed()
+  return generateRandomNodeData(nrOfNodes, nrOfLinks)
+}
 
 const calcNewItData = ({ iterationCnt, currentIteration }) => ({
   newCurrIt: iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration,

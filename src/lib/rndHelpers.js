@@ -1,7 +1,7 @@
 import seedrandom from 'seedrandom'
 
 const STATIC_SEED = 'Combining React and D3'
-const rnd = seedrandom(STATIC_SEED)
+let rnd = seedrandom(STATIC_SEED)
 
 export const randBetween = (min, max) => Math.floor(rnd() * (max - min + 1) + min)
 
@@ -37,3 +37,5 @@ export const generateRandomNodeData = (nrOfNodes, nrOfLinks) => {
   const links = randomizeLinks(nodes, +nrOfLinks)
   return { nodes, links }
 }
+
+export const reseed = () => (rnd = seedrandom(STATIC_SEED))

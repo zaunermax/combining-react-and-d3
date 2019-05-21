@@ -1,7 +1,5 @@
 import React, { Component, createRef } from 'react'
 import styled from 'styled-components/macro'
-import { NodeGroup } from 'components/app/reactMove'
-import { easeCubic } from 'd3-ease'
 import { getCurvedLinkPath, getStraightLinkPath, LINK_TYPES } from 'lib/d3/linkPath'
 import {
   buildForceSimulation,
@@ -9,10 +7,12 @@ import {
   ForceGraphDefaultProps,
   ForceGraphProps,
   SIMULATION_TYPE,
-} from 'lib/d3/forcePure'
+} from 'lib/d3/force'
 import { shallowCompare } from 'lib/util/shallow'
-
-const ANIMATION_DURATION = 750
+import { animateLeave, animateStart, animateUpdate } from 'lib/animation'
+import { Nodes } from 'components/hybrid/nodes'
+import { Links } from 'components/hybrid/links'
+import PropTypes from 'prop-types'
 
 const G = styled.g`
   stroke: #ffffff;
@@ -27,10 +27,22 @@ const Container = styled.span`
 export class HybridForceGraph extends Component {
   static propTypes = {
     ...ForceGraphProps,
+    animation: PropTypes.shape({
+      start: PropTypes.func.isRequired,
+      update: PropTypes.func.isRequired,
+      leave: PropTypes.func.isRequired,
+      keyAccessor: PropTypes.func.isRequired,
+    }),
   }
 
   static defaultProps = {
     ...ForceGraphDefaultProps,
+    animation: {
+      start: animateStart,
+      update: animateUpdate,
+      leave: animateLeave,
+      keyAccessor: (d) => d.name,
+    },
   }
 
   static displayName = 'HybridForceGraph'
@@ -114,55 +126,16 @@ export class HybridForceGraph extends Component {
     options: this.extractSimOptions(),
   })
 
-  logNode = (name) => () => {
-    console.log('name', name)
-  }
-
-  start = ({ size }) => ({
-    r: size,
-    fill: '#45b29d',
-    timing: { duration: ANIMATION_DURATION },
-  })
-
-  update = ({ size }) => ({
-    r: [size],
-    fill: '#3a403d',
-    timing: { duration: ANIMATION_DURATION },
-  })
-
-  leave = () => ({
-    r: [0],
-    fill: '#b26745',
-    timing: { duration: ANIMATION_DURATION, ease: easeCubic },
-  })
-
   render() {
-    const { height, width } = this.props
+    const { height, width, animation } = this.props
     const { data, links } = this.state
 
     return (
       <Container>
         <svg height={height} width={width}>
           <G ref={this.ref} transform={`translate(${width / 2},${height / 2})`}>
-            {links &&
-              links.map(({ source: { name: s }, target: { name: t } }) => (
-                <path key={s + t} id={s + t} stroke={'#45b29d'} fill={'none'} />
-              ))}
-            <NodeGroup
-              data={data}
-              keyAccessor={(d) => d.name}
-              start={this.start}
-              update={this.update}
-              leave={this.leave}
-            >
-              {(nodes) => (
-                <>
-                  {nodes.map(({ key, state: { fill, r } }) => (
-                    <circle key={key} id={key} onClick={this.logNode(key)} fill={fill} r={r} />
-                  ))}
-                </>
-              )}
-            </NodeGroup>
+            <Links links={links} />
+            <Nodes animation={animation} data={data} />
           </G>
         </svg>
       </Container>

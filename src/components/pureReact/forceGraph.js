@@ -1,27 +1,25 @@
-import React, { Component, createRef } from 'react'
+import React, { Component } from 'react'
 import {
   buildForceSimulation,
   ForceGraphDefaultProps,
   ForceGraphProps,
   getLinkPaths,
   getNodePositions,
-  linkId,
-  nodeId,
   SIMULATION_TYPE,
-} from 'lib/d3/forcePure'
+} from 'lib/d3/force'
 import { shallowCompare } from 'lib/util/shallow'
-import styled from 'styled-components/macro'
-import { ForceLink } from 'components/pureReact/pureLink'
+import { Nodes } from 'components/pureReact/nodes'
+import { Links } from 'components/pureReact/links'
 
-const Container = styled.span`
-  position: relative;
-  display: inline-block;
-`
+const gStyle = {
+  stroke: '#ffffff',
+  strokeWidth: '1.5px',
+}
 
-const G = styled.g`
-  stroke: #ffffff;
-  stroke-width: 1.5px;
-`
+const containerStyle = {
+  position: 'relative',
+  display: 'inline-block',
+}
 
 export class PureReactForceGraph extends Component {
   static propTypes = {
@@ -40,8 +38,6 @@ export class PureReactForceGraph extends Component {
     super(props)
     this.initSimulation()
     this.startSimulationTicks()
-    this.linksRef = createRef()
-    this.nodesRef = createRef()
     this.state = {
       linkPositions: {},
       nodePositions: {},
@@ -69,14 +65,6 @@ export class PureReactForceGraph extends Component {
   cancelSimulationTicks = () => {
     this.simulation.on('tick', null)
     this.frame = this.frame && cancelAnimationFrame(this.frame)
-  }
-
-  getNodePosition = (node) => {
-    return this.state.nodePositions[nodeId(node)]
-  }
-
-  getLinkPath = (link) => {
-    return this.state.linkPositions[linkId(link)]
   }
 
   onEnd = () => {
@@ -134,32 +122,17 @@ export class PureReactForceGraph extends Component {
 
   render() {
     const { height, width, data: nodes, links } = this.props
+    const { linkPositions, nodePositions } = this.state
+
     return (
-      <Container>
+      <span style={containerStyle}>
         <svg height={height} width={width}>
-          <G transform={`translate(${width / 2},${height / 2})`}>
-            <g ref={this.linksRef} className={'links'}>
-              {links &&
-                links.map((link) => {
-                  const path = this.getLinkPath(link)
-                  return path && link ? (
-                    <ForceLink key={linkId(link)} link={link} path={this.getLinkPath(link)} />
-                  ) : null
-                })}
-            </g>
-            <g ref={this.nodesRef} className={'nodes'}>
-              {nodes &&
-                nodes.map((node) => {
-                  const pos = this.getNodePosition(node)
-                  const id = nodeId(node)
-                  return node && pos ? (
-                    <circle id={id} r={node.size} fill={'#45b29d'} key={id} {...pos} />
-                  ) : null
-                })}
-            </g>
-          </G>
+          <g style={gStyle} transform={`translate(${width / 2},${height / 2})`}>
+            <Links links={links} linkPositions={linkPositions} />
+            <Nodes nodes={nodes} nodePositions={nodePositions} />
+          </g>
         </svg>
-      </Container>
+      </span>
     )
   }
 }

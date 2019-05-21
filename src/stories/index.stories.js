@@ -7,5 +7,5 @@ import { PureReactForceGraph } from 'components/pureReact/forceGraph'
 
 storiesOf('Force Graph', module)
   .add('Pure D3', () => <GraphContainer component={PureD3ForceGraph} />)
-  .add('Pure React', () => <GraphContainer component={PureReactForceGraph} />)
   .add('React & D3 hybrid', () => <GraphContainer component={HybridForceGraph} />)
+  .add('Pure React', () => <GraphContainer component={PureReactForceGraph} />)
