@@ -27,6 +27,7 @@ const Container = styled.span`
 export class HybridForceGraph extends Component {
   static propTypes = {
     ...ForceGraphProps,
+    renderNode: PropTypes.func,
     animation: PropTypes.shape({
       start: PropTypes.func.isRequired,
       update: PropTypes.func.isRequired,
@@ -41,7 +42,7 @@ export class HybridForceGraph extends Component {
       start: animateStart,
       update: animateUpdate,
       leave: animateLeave,
-      keyAccessor: (d) => d.name,
+      keyAccessor: (d) => d.id,
     },
   }
 
@@ -89,7 +90,7 @@ export class HybridForceGraph extends Component {
 
     this.simulation.nodeSel
       .data(data, function(d) {
-        return d ? d.name : this.id
+        return d ? d.id : this.id
       })
       .attr('cx', (d) => {
         return d.x
@@ -99,7 +100,7 @@ export class HybridForceGraph extends Component {
     links &&
       this.simulation.linkSel
         .data(links, function(d) {
-          return d ? d.source.name + d.target.name : this.id
+          return d ? d.source.id + d.target.id : this.id
         })
         .attr('d', this.getLinkPath)
   }
@@ -127,7 +128,7 @@ export class HybridForceGraph extends Component {
   })
 
   render() {
-    const { height, width, animation } = this.props
+    const { height, width, animation, renderNode } = this.props
     const { data, links } = this.state
 
     return (
@@ -135,7 +136,7 @@ export class HybridForceGraph extends Component {
         <svg height={height} width={width}>
           <G ref={this.ref} transform={`translate(${width / 2},${height / 2})`}>
             <Links links={links} />
-            <Nodes animation={animation} data={data} />
+            <Nodes animation={animation} data={data} renderer={renderNode} />
           </G>
         </svg>
       </Container>

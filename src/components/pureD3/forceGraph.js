@@ -138,7 +138,6 @@ export class PureD3ForceGraph extends Component {
   setRef = (ref) => (this.ref = ref)
 
   render() {
-    console.log('I only render once!')
     const { width, height } = this.props
     return <svg ref={this.setRef} width={width} height={height} />
   }

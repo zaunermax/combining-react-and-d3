@@ -1,19 +1,22 @@
 import { NodeGroup } from 'react-move'
 import React from 'react'
 
-const renderFn = ({ id, fill, size }) => <circle key={id} id={id} fill={fill} r={size} />
+const STD_FILL = '#45b29d'
 
-const renderAnimation = ({ key, state: { fill, r } }) => renderFn({ id: key, fill, size: r })
-const renderNodes = ({ name, size }) => renderFn({ id: name, fill: '#45b29d', size })
+const stdRenderer = ({ id, size, fill }) => (
+  <circle key={id} id={id} r={size} fill={fill || STD_FILL} />
+)
 
-const renderAnimatedNodes = (nodes) => <>{nodes.map(renderAnimation)}</>
-const renderNormalNodes = (nodes) => nodes.map(renderNodes)
+const getAnimationData = (nodeRenderer) => ({ key, state }) => nodeRenderer({ id: key, ...state })
+const getNormalData = (nodeRenderer) => (data) => nodeRenderer(data)
 
-export const Nodes = ({ animation, data }) =>
+const getNodeRenderer = (accessor, h) => (nodes) => <>{nodes.map(accessor(h))}</>
+
+export const Nodes = ({ animation, data, renderer = stdRenderer }) =>
   animation ? (
     <NodeGroup data={data} {...animation}>
-      {renderAnimatedNodes}
+      {getNodeRenderer(getAnimationData, renderer)}
     </NodeGroup>
   ) : (
-    renderNormalNodes(data)
+    getNodeRenderer(getNormalData, renderer)(data)
   )

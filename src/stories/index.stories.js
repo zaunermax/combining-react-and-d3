@@ -1,11 +1,3 @@
-import React from 'react'
-import { storiesOf } from '@storybook/react'
-import { GraphContainer } from 'components/app/stateContainer'
-import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
-import { HybridForceGraph } from 'components/hybrid/forceGraph'
-import { PureReactForceGraph } from 'components/pureReact/forceGraph'
-
-storiesOf('Force Graph', module)
-  .add('Pure D3', () => <GraphContainer component={PureD3ForceGraph} />)
-  .add('React & D3 hybrid', () => <GraphContainer component={HybridForceGraph} />)
-  .add('Pure React', () => <GraphContainer component={PureReactForceGraph} />)
+import './pages/d3.story'
+import './pages/hybrid.story'
+import './pages/react.story'

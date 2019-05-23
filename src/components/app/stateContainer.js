@@ -76,8 +76,6 @@ export class GraphContainer extends Component {
       linkType: linkType === LINK_TYPES.STRAIGHT ? LINK_TYPES.CURVED : LINK_TYPES.STRAIGHT,
     }))
 
-  selectNode = (name) => this.setState({ selNode: name })
-
   onCheckData = () => {
     console.log('force data', this.state.data)
     console.log('force links', this.state.links)
@@ -106,7 +104,6 @@ export class GraphContainer extends Component {
           height={STD_HEIGHT}
           linkType={linkType}
           selNode={selNode}
-          selectNode={this.selectNode}
           forceOptions={forceOptions}
         />
       </div>

@@ -46,18 +46,18 @@ export const SIMULATION_TYPE = Object.freeze({
 
 // -------------- Util -------------- //
 
-const findName = (name) => ({ name: n }) => n === name
+const findId = (id) => ({ id: n }) => n === id
 
 export const encapsulateOutsideData = ({ data, links }, { data: stateData = [] }) => {
-  const newData = data.map(({ name, size }) => {
-    const existing = stateData.find(({ name: n }) => name === n)
-    return existing ? Object.assign(existing, { size }) : { name, size }
+  const newData = data.map(({ id, size }) => {
+    const existing = stateData.find(({ id: n }) => id === n)
+    return existing ? Object.assign(existing, { size }) : { id, size }
   })
 
   const newLinks = links
-    ? links.map(({ source: { name: sName }, target: { name: tName } }) => {
-        const source = newData.find(findName(sName))
-        const target = newData.find(findName(tName))
+    ? links.map(({ source: { id: sId }, target: { id: tId } }) => {
+        const source = newData.find(findId(sId))
+        const target = newData.find(findId(tId))
         return { source, target }
       })
     : []
@@ -207,10 +207,10 @@ const initialSelect = (simulation, { ref }) => {
 }
 
 const applyUpdatePattern = (simulation, { nodes, links }) => {
-  simulation.nodeSel = simulation.nodeSel.data(nodes, ({ name }) => name)
+  simulation.nodeSel = simulation.nodeSel.data(nodes, ({ id }) => id)
   simulation.linkSel = simulation.linkSel.data(
     links,
-    ({ source: { name: s }, target: { name: t } }) => s + t,
+    ({ source: { id: s }, target: { id: t } }) => s + t,
   )
 }
 
@@ -221,28 +221,25 @@ const applyPureD3Selection = ({ simulation, options }) => {
 
 // -------------- Simulation -------------- //
 
+const applyForceHandlers = pipeAppliers(applyGeneralForce, applyLinkForce, applyCollisionForce)
+const applyEndHandlers = pipeAppliers(applyOnEndHandler, applySimulationReheating)
+
 const pureD3Updater = pipeAppliers(
   applyNewNodeData,
   applyPureD3Selection,
   applyTickHandler,
-  applyGeneralForce,
-  applyLinkForce,
-  applyCollisionForce,
+  applyForceHandlers,
   applyDragHandlers,
-  applyOnEndHandler,
-  applySimulationReheating,
+  applyEndHandlers,
 )
 
 const hybridUpdater = pipeAppliers(
   applyNewNodeData,
   applyNewRefs,
   applyTickHandler,
-  applyGeneralForce,
-  applyLinkForce,
-  applyCollisionForce,
+  applyForceHandlers,
   applyDragHandlers,
-  applyOnEndHandler,
-  applySimulationReheating,
+  applyEndHandlers,
 )
 
 const pureReactUpdater = pipeAppliers(
@@ -250,8 +247,7 @@ const pureReactUpdater = pipeAppliers(
   applyNewNodeData,
   applyLinkForce,
   applyCollisionForce,
-  applyOnEndHandler,
-  applySimulationReheating,
+  applyEndHandlers,
 )
 
 const getUpdaterFunction = switchCase({

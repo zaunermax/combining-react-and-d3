@@ -3,7 +3,7 @@ import styled from 'styled-components/macro'
 import Autosizer from 'react-virtualized-auto-sizer'
 import { LINK_TYPES } from 'lib/d3/linkPath'
 import { generateRandomNodeData, reseed } from 'lib/rndHelpers'
-import { D3_BENCH, HYBRID_BENCH, PURE_BENCH } from 'routes'
+import { BENCHMARK, D3_BENCH, HYBRID_BENCH, PURE_BENCH } from '../routes'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
@@ -87,7 +87,7 @@ class BenchmarkContainer extends Component {
     }
   }
 
-  componentDidUpdate(_, oldState) {
+  componentDidUpdate({ location }, oldState) {
     this.setState((state) => {
       const itData = calcNewItData(state)
 
@@ -96,7 +96,7 @@ class BenchmarkContainer extends Component {
         : shouldDoNewIteration(oldState, state, itData)
         ? getNewIterationData(itData)
         : iterationsFinished(itData)
-        ? { benchmarkFinished: true }
+        ? { benchmarkFinished: true, componentType: location.pathname }
         : null
     })
   }
@@ -150,6 +150,7 @@ class BenchmarkContainer extends Component {
     return benchmarkRunning ? (
       <Container>
         <IterationCnt>
+          <div>{this.props.location.pathname}</div>
           <div>Current iteration: {currentIteration + 1}</div>
           <div>Iteration cnt: {iterationCnt}</div>
         </IterationCnt>
@@ -164,7 +165,7 @@ class BenchmarkContainer extends Component {
                   exact
                 />
               ))}
-              <Redirect to={D3_BENCH} />
+              <Redirect from={BENCHMARK} to={D3_BENCH} />
             </Switch>
           )}
         </Autosizer>

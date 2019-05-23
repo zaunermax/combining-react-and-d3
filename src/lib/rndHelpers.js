@@ -1,16 +1,16 @@
-import seedrandom from 'seedrandom'
+import seedRandom from 'seedrandom'
 
 const STATIC_SEED = 'Combining React and D3'
-let rnd = seedrandom(STATIC_SEED)
+let rnd = seedRandom(STATIC_SEED)
 
 export const randBetween = (min, max) => Math.floor(rnd() * (max - min + 1) + min)
 
 export const createRndNode = () => ({
-  name: `Node_${rnd()}`,
+  id: `Node_${rnd()}`,
   size: randBetween(5, 50),
 })
 
-export const isSameLink = (key) => ({ source: { name: s }, target: { name: t } }) =>
+export const isSameLink = (key) => ({ source: { id: s }, target: { id: t } }) =>
   s + t === key || t + s === key
 
 export const randomizeLinks = (data = [], nrOfLinks) =>
@@ -23,7 +23,7 @@ export const randomizeLinks = (data = [], nrOfLinks) =>
       const d1 = data[firstIdx]
       const d2 = data[secondIdx]
 
-      return firstIdx !== secondIdx && !acc.find(isSameLink(d1.name + d2.name))
+      return firstIdx !== secondIdx && !acc.find(isSameLink(d1.id + d2.id))
         ? acc.concat({
             source: data[firstIdx],
             target: data[secondIdx],
@@ -38,4 +38,4 @@ export const generateRandomNodeData = (nrOfNodes, nrOfLinks) => {
   return { nodes, links }
 }
 
-export const reseed = () => (rnd = seedrandom(STATIC_SEED))
+export const reseed = () => (rnd = seedRandom(STATIC_SEED))
