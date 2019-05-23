@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, createRef } from 'react'
 import { select } from 'd3-selection'
 import { transition } from 'd3-transition'
 import { getCurvedLinkPath, getStraightLinkPath, LINK_TYPES } from 'lib/d3/linkPath'
@@ -24,6 +24,7 @@ export class PureD3ForceGraph extends Component {
   constructor(props) {
     super(props)
     this.state = {}
+    this.ref = createRef()
   }
 
   componentDidMount() {
@@ -63,7 +64,7 @@ export class PureD3ForceGraph extends Component {
 
   updateDimensions = () => {
     const { height, width } = this.props
-    select(this.ref)
+    select(this.ref.current)
       .select('g')
       .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
   }
@@ -84,7 +85,7 @@ export class PureD3ForceGraph extends Component {
 
     onSimulationStart()
 
-    const svg = select(this.ref)
+    const svg = select(this.ref.current)
     svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
     const simOptions = this.extractSimOptions()
@@ -134,10 +135,8 @@ export class PureD3ForceGraph extends Component {
     this.updateSimulation(this.extractSimUpdateOptions())
   }
 
-  setRef = (ref) => (this.ref = ref)
-
   render() {
     const { width, height } = this.props
-    return <svg ref={this.setRef} width={width} height={height} />
+    return <svg ref={this.ref} width={width} height={height} />
   }
 }

@@ -200,10 +200,10 @@ const applyOnEndHandler = ({ simulation, options: { endHandler } }) => {
 }
 
 const initialSelect = (simulation, { ref }) => {
-  const selection = select(ref).select('g')
+  const selection = select(ref.current).select('g')
 
-  simulation.linkSel = selection.selectAll('path')
-  simulation.nodeSel = selection.selectAll('.node')
+  simulation.linkSel = selection.append('g').selectAll('path')
+  simulation.nodeSel = selection.append('g').selectAll('.node')
 }
 
 const applyUpdatePattern = (simulation, { nodes, links }) => {
