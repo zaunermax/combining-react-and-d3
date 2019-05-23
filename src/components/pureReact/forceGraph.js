@@ -73,7 +73,7 @@ export class PureReactForceGraph extends Component {
 
   extractSimOptions = (overrideProps = null) => {
     const { nodesRef, props } = this
-    const { data: nodes, links, forceOptions } = overrideProps || props
+    const { nodes, links, forceOptions } = overrideProps || props
     return {
       nodes: nodes || [],
       links: links || [],
@@ -121,7 +121,7 @@ export class PureReactForceGraph extends Component {
   // Rendering
 
   render() {
-    const { height, width, data: nodes, links } = this.props
+    const { height, width, nodes, links } = this.props
     const { linkPositions, nodePositions } = this.state
 
     return (

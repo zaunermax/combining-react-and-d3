@@ -9,7 +9,7 @@ import {
   SIMULATION_TYPE,
 } from 'lib/d3/force'
 import { shallowCompare } from 'lib/util/shallow'
-import { animateLeave, animateStart, animateUpdate } from 'lib/animation'
+import { stdAnimateLeave, stdAnimateStart, stdAnimateUpdate } from 'components/hybrid/animation'
 import { Nodes } from 'components/hybrid/nodes'
 import { Links } from 'components/hybrid/links'
 import PropTypes from 'prop-types'
@@ -39,9 +39,9 @@ export class HybridForceGraph extends Component {
   static defaultProps = {
     ...ForceGraphDefaultProps,
     animation: {
-      start: animateStart,
-      update: animateUpdate,
-      leave: animateLeave,
+      start: stdAnimateStart,
+      update: stdAnimateUpdate,
+      leave: stdAnimateLeave,
       keyAccessor: (d) => d.id,
     },
   }
@@ -85,24 +85,22 @@ export class HybridForceGraph extends Component {
   getLinkPath = (d) =>
     this.props.linkType === LINK_TYPES.CURVED ? getCurvedLinkPath(d) : getStraightLinkPath(d)
 
+  applyNodeTick = (nodeSel) => nodeSel.attr('cx', (d) => d.x).attr('cy', (d) => d.y)
+  applyLinkTick = (linkSel) => linkSel.attr('d', this.getLinkPath)
+
   ticked = () => {
-    const { links, data } = this.state
+    const { links, nodes } = this.state
 
-    this.simulation.nodeSel
-      .data(data, function(d) {
-        return d ? d.id : this.id
-      })
-      .attr('cx', (d) => {
-        return d.x
-      })
-      .attr('cy', (d) => d.y)
+    this.simulation.nodeSel.data(nodes, function(d) {
+      return d ? d.id : this.id
+    })
 
-    links &&
-      this.simulation.linkSel
-        .data(links, function(d) {
-          return d ? d.source.id + d.target.id : this.id
-        })
-        .attr('d', this.getLinkPath)
+    this.simulation.linkSel.data(links, function(d) {
+      return d ? d.source.id + d.target.id : this.id
+    })
+
+    this.applyNodeTick(this.simulation.nodeSel)
+    this.applyLinkTick(this.simulation.linkSel)
   }
 
   onEnd = () => {
@@ -111,7 +109,7 @@ export class HybridForceGraph extends Component {
 
   extractSimOptions = () => {
     const { forceOptions } = this.props
-    const { data: nodes, links } = this.state
+    const { nodes, links } = this.state
     return {
       ...forceOptions,
       nodes: nodes || [],
@@ -129,14 +127,14 @@ export class HybridForceGraph extends Component {
 
   render() {
     const { height, width, animation, renderNode } = this.props
-    const { data, links } = this.state
+    const { nodes, links } = this.state
 
     return (
       <Container>
         <svg height={height} width={width}>
           <G ref={this.ref} transform={`translate(${width / 2},${height / 2})`}>
             <Links links={links} />
-            <Nodes animation={animation} data={data} renderer={renderNode} />
+            <Nodes animation={animation} nodes={nodes} renderer={renderNode} />
           </G>
         </svg>
       </Container>

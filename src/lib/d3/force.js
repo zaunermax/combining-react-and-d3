@@ -14,7 +14,7 @@ import { noop, pipe, switchCase } from 'lib/fpUtil'
 import PropTypes from 'prop-types'
 
 export const ForceGraphProps = Object.freeze({
-  data: PropTypes.array,
+  nodes: PropTypes.array,
   links: PropTypes.array,
   width: PropTypes.number,
   height: PropTypes.number,
@@ -26,7 +26,7 @@ export const ForceGraphProps = Object.freeze({
 })
 
 export const ForceGraphDefaultProps = Object.freeze({
-  data: [],
+  nodes: [],
   links: [],
   width: 500,
   height: 500,
@@ -48,21 +48,21 @@ export const SIMULATION_TYPE = Object.freeze({
 
 const findId = (id) => ({ id: n }) => n === id
 
-export const encapsulateOutsideData = ({ data, links }, { data: stateData = [] }) => {
-  const newData = data.map(({ id, size }) => {
-    const existing = stateData.find(({ id: n }) => id === n)
+export const encapsulateOutsideData = ({ nodes, links }, { nodes: stateNodes = [] }) => {
+  const newNodes = nodes.map(({ id, size }) => {
+    const existing = stateNodes.find(({ id: n }) => id === n)
     return existing ? Object.assign(existing, { size }) : { id, size }
   })
 
   const newLinks = links
     ? links.map(({ source: { id: sId }, target: { id: tId } }) => {
-        const source = newData.find(findId(sId))
-        const target = newData.find(findId(tId))
+        const source = newNodes.find(findId(sId))
+        const target = newNodes.find(findId(tId))
         return { source, target }
       })
     : []
 
-  return { data: newData, links: newLinks }
+  return { nodes: newNodes, links: newLinks }
 }
 
 export const nodeId = ({ index }) => index
@@ -178,7 +178,7 @@ const applySimulationReheating = ({ simulation }) => {
 
 const applyNewRefs = ({ simulation, options: { ref } }) => {
   const selection = select(ref.current)
-  simulation.nodeSel = selection.selectAll('circle')
+  simulation.nodeSel = selection.selectAll('.node')
   simulation.linkSel = selection.selectAll('path')
 }
 
@@ -242,13 +242,7 @@ const hybridUpdater = pipeAppliers(
   applyEndHandlers,
 )
 
-const pureReactUpdater = pipeAppliers(
-  applyGeneralForce,
-  applyNewNodeData,
-  applyLinkForce,
-  applyCollisionForce,
-  applyEndHandlers,
-)
+const pureReactUpdater = pipeAppliers(applyNewNodeData, applyForceHandlers, applyEndHandlers)
 
 const getUpdaterFunction = switchCase({
   [SIMULATION_TYPE.PURE_D3]: pureD3Updater,

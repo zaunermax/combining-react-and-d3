@@ -43,7 +43,7 @@ export class PureD3ForceGraph extends Component {
 
   extractSimOptions = (additional = {}) => {
     const { forceOptions } = this.props
-    const { data: nodes, links } = this.state
+    const { nodes, links } = this.state
     return {
       ...forceOptions,
       ...additional,
@@ -101,9 +101,6 @@ export class PureD3ForceGraph extends Component {
   updateGraph = (omitUpdateCall = false) => {
     !omitUpdateCall && this.updateSimulation(this.extractSimUpdateOptions())
 
-    // transition
-    let t = transition().duration(750)
-
     this.simulation.linkSel.exit().remove()
 
     this.simulation.linkSel = this.simulation.linkSel
@@ -111,8 +108,9 @@ export class PureD3ForceGraph extends Component {
       .append('path')
       .attr('stroke', '#45b29d')
       .attr('fill', 'none')
-      .attr('id', ({ source: { name: s }, target: { name: t } }) => s + t)
       .merge(this.simulation.linkSel)
+
+    let t = transition().duration(750)
 
     this.simulation.nodeSel
       .exit()

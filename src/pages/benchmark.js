@@ -126,7 +126,7 @@ class BenchmarkContainer extends Component {
     const { nodes = [], links = [] } = this.state
     return (
       <ForceComponent
-        data={nodes}
+        nodes={nodes}
         links={links}
         linkType={LINK_TYPES.CURVED}
         height={height}

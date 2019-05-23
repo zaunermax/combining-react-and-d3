@@ -15,7 +15,7 @@ export class GraphContainer extends Component {
   state = {
     data: [],
     links: [],
-    tmpForceLinks: null,
+    tmpForceLinks: [],
     width: STD_WIDTH,
     forceLinkToggle: false,
     linkType: LINK_TYPES.CURVED,
@@ -32,8 +32,8 @@ export class GraphContainer extends Component {
       const newLinks = randomizeLinks(data)
       return {
         data,
-        links: forceLinkToggle ? newLinks : null,
-        tmpForceLinks: forceLinkToggle ? null : newLinks,
+        links: forceLinkToggle ? newLinks : [],
+        tmpForceLinks: forceLinkToggle ? [] : newLinks,
       }
     })
 
@@ -61,14 +61,14 @@ export class GraphContainer extends Component {
   onToggleLinks = () =>
     this.setState(({ forceLinkToggle, links, tmpForceLinks }) => ({
       forceLinkToggle: !forceLinkToggle,
-      tmpForceLinks: forceLinkToggle ? links : null,
-      links: forceLinkToggle ? null : tmpForceLinks,
+      tmpForceLinks: forceLinkToggle ? links : [],
+      links: forceLinkToggle ? [] : tmpForceLinks,
     }))
 
   onRandomizeLinks = () =>
     this.setState(({ links, tmpForceLinks, data }) => ({
-      links: links ? randomizeLinks(data) : null,
-      tmpForceLinks: tmpForceLinks ? randomizeLinks(data) : null,
+      links: links.length ? randomizeLinks(data) : [],
+      tmpForceLinks: tmpForceLinks.length ? randomizeLinks(data) : [],
     }))
 
   onToggleLinkType = () =>
@@ -98,7 +98,7 @@ export class GraphContainer extends Component {
           <button onClick={this.onCheckData}>check data</button>
         </div>
         <C
-          data={data}
+          nodes={data}
           links={links}
           width={width}
           height={STD_HEIGHT}
