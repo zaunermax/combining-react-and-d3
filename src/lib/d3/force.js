@@ -217,6 +217,7 @@ const applyUpdatePattern = (simulation, { nodes, links }) => {
 const applyPureD3Selection = ({ simulation, options }) => {
   !options.update && initialSelect(simulation, options)
   applyUpdatePattern(simulation, options)
+  options.nodeUpdateCycle(simulation)
 }
 
 // -------------- Simulation -------------- //

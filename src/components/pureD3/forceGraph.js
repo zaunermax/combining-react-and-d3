@@ -51,6 +51,7 @@ export class PureD3ForceGraph extends Component {
       links: links || [],
       tickHandler: this.ticked,
       endHandler: this.onEnd,
+      nodeUpdateCycle: this.applyNodeUpdateCycle,
       ref: this.ref,
     }
   }
@@ -94,43 +95,43 @@ export class PureD3ForceGraph extends Component {
 
     this.simulation = simulation
     this.updateSimulation = updateSimulation
-
-    this.updateGraph(true)
   }
 
-  updateGraph = (omitUpdateCall = false) => {
-    !omitUpdateCall && this.updateSimulation(this.extractSimUpdateOptions())
+  applyNodeUpdateCycle = (simulation) => {
+    simulation.linkSel.exit().remove()
 
-    this.simulation.linkSel.exit().remove()
-
-    this.simulation.linkSel = this.simulation.linkSel
+    simulation.linkSel = simulation.linkSel
       .enter()
       .append('path')
       .attr('stroke', '#45b29d')
       .attr('fill', 'none')
-      .merge(this.simulation.linkSel)
+      .merge(simulation.linkSel)
 
     let t = transition().duration(750)
 
-    this.simulation.nodeSel
+    simulation.nodeSel
       .exit()
       .style('fill', '#b26745')
       .transition(t)
       .attr('r', 1e-6)
       .remove()
 
-    this.simulation.nodeSel
+    simulation.nodeSel
       .transition(t)
       .style('fill', '#3a403d')
       .attr('r', ({ size }) => size)
 
-    this.simulation.nodeSel = this.simulation.nodeSel
+    simulation.nodeSel = simulation.nodeSel
       .enter()
       .append('circle')
       .style('fill', '#45b29d')
       .attr('r', ({ size }) => size)
       .attr('id', ({ name }) => name)
-      .merge(this.simulation.nodeSel)
+      .merge(simulation.nodeSel)
+  }
+
+  updateGraph = () => {
+    this.updateSimulation(this.extractSimUpdateOptions())
   }
 
   setRef = (ref) => (this.ref = ref)
