@@ -23,6 +23,13 @@ export const ForceGraphProps = Object.freeze({
   selectNode: PropTypes.func,
   onSimulationStart: PropTypes.func,
   onSimulationEnd: PropTypes.func,
+  forceOptions: PropTypes.shape({
+    radiusMultiplier: PropTypes.number,
+    strength: PropTypes.number,
+    linkStrength: PropTypes.number,
+    linkDistance: PropTypes.number,
+    reheatAlpha: PropTypes.number,
+  }),
 })
 
 export const ForceGraphDefaultProps = Object.freeze({
@@ -49,9 +56,9 @@ export const SIMULATION_TYPE = Object.freeze({
 const findId = (id) => ({ id: n }) => n === id
 
 export const encapsulateOutsideData = ({ nodes, links }, { nodes: stateNodes = [] }) => {
-  const newNodes = nodes.map(({ id, size }) => {
+  const newNodes = nodes.map(({ id, ...rest }) => {
     const existing = stateNodes.find(({ id: n }) => id === n)
-    return existing ? Object.assign(existing, { size }) : { id, size }
+    return existing ? Object.assign(existing, { ...rest }) : { id, ...rest }
   })
 
   const newLinks = links
@@ -112,8 +119,8 @@ const onDrag = (simulation) => (d) => {
   d.fy = event.y
 }
 
-const onDragEnded = (simulation) => (d) => {
-  simulation.alpha(1).restart()
+const onDragEnded = (simulation, { reheatAlpha }) => (d) => {
+  simulation.alpha(reheatAlpha || 1).restart()
   simulation.alphaMin(0.001)
   d.fx = null
   d.fy = null
@@ -158,11 +165,11 @@ const applyCollisionForce = ({ simulation, options: { radiusMultiplier, strength
 
 const applyNewNodeData = ({ simulation, options: { nodes } }) => simulation.nodes(nodes)
 
-const applyLinkForce = ({ simulation, options: { links } }) => {
+const applyLinkForce = ({ simulation, options: { links, linkStrength, linkDistance } }) => {
   if (!simulation.force('link')) {
     const fLink = forceLink()
-    fLink.distance(250)
-    fLink.strength(0.2)
+    fLink.distance(linkDistance || 250)
+    fLink.strength(linkStrength || 0.2)
     fLink.distance(calcLinkDist)
     fLink.id(nodeId)
     simulation.force('link', fLink)
@@ -171,8 +178,8 @@ const applyLinkForce = ({ simulation, options: { links } }) => {
   simulation.force('link').links(links)
 }
 
-const applySimulationReheating = ({ simulation }) => {
-  simulation.alpha(1).restart()
+const applySimulationReheating = ({ simulation, options: { reheatAlpha } }) => {
+  simulation.alpha(reheatAlpha || 1).restart()
   simulation.alphaMin(0.001)
 }
 
@@ -186,12 +193,12 @@ const applyTickHandler = ({ simulation, options: { tickHandler } }) => {
   simulation.on('tick', tickHandler)
 }
 
-const applyDragHandlers = ({ simulation }) => {
+const applyDragHandlers = ({ simulation, options }) => {
   simulation.nodeSel.call(
     drag()
-      .on('start', onDragStarted(simulation))
-      .on('drag', onDrag(simulation))
-      .on('end', onDragEnded(simulation)),
+      .on('start', onDragStarted(simulation, options))
+      .on('drag', onDrag(simulation, options))
+      .on('end', onDragEnded(simulation, options)),
   )
 }
 

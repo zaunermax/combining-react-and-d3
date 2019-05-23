@@ -28,6 +28,7 @@ export class HybridForceGraph extends Component {
   static propTypes = {
     ...ForceGraphProps,
     renderNode: PropTypes.func,
+    renderLink: PropTypes.func,
     animation: PropTypes.shape({
       start: PropTypes.func.isRequired,
       update: PropTypes.func.isRequired,
@@ -134,14 +135,14 @@ export class HybridForceGraph extends Component {
   })
 
   render() {
-    const { height, width, animation, renderNode } = this.props
+    const { height, width, animation, renderNode, renderLink } = this.props
     const { nodes, links } = this.state
 
     return (
       <Container>
         <svg height={height} width={width}>
           <G ref={this.ref} transform={`translate(${width / 2},${height / 2})`}>
-            <Links links={links} />
+            <Links links={links} renderLink={renderLink} />
             <Nodes animation={animation} nodes={nodes} renderer={renderNode} />
           </G>
         </svg>

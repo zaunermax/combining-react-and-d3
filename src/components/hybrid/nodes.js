@@ -12,11 +12,14 @@ const getNormalData = (nodeRenderer) => (nodes) => nodeRenderer(nodes)
 
 const getNodeRenderer = (accessor, h) => (nodes) => <>{nodes.map(accessor(h))}</>
 
-export const Nodes = ({ animation, nodes, renderer = stdRenderer }) =>
-  animation ? (
-    <NodeGroup data={nodes} {...animation}>
-      {getNodeRenderer(getAnimationData, renderer)}
-    </NodeGroup>
-  ) : (
-    getNodeRenderer(getNormalData, renderer)(nodes)
-  )
+export const Nodes = ({ animation, nodes, renderer = stdRenderer }) => (
+  <g className={'nodes'}>
+    {animation ? (
+      <NodeGroup data={nodes} {...animation}>
+        {getNodeRenderer(getAnimationData, renderer)}
+      </NodeGroup>
+    ) : (
+      getNodeRenderer(getNormalData, renderer)(nodes)
+    )}
+  </g>
+)

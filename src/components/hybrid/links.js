@@ -1,7 +1,9 @@
 import React from 'react'
 
-export const Links = ({ links }) =>
-  links &&
-  links.map(({ source: { id: s }, target: { id: t } }) => (
-    <path key={s + t} id={s + t} stroke={'#45b29d'} fill={'none'} />
-  ))
+const stdLinkRenderer = ({ source: { id: s }, target: { id: t } }) => (
+  <path key={s + t} id={s + t} stroke={'#45b29d'} fill={'none'} />
+)
+
+export const Links = ({ links, renderLink = stdLinkRenderer }) => (
+  <g className={'links'}>{links.map(renderLink)}</g>
+)
