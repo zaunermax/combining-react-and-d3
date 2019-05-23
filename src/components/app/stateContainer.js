@@ -8,7 +8,6 @@ const STD_HEIGHT = 900
 
 const forceOptions = {
   radiusMultiplier: 1.2,
-  strength: 1,
 }
 
 export class GraphContainer extends Component {
@@ -28,10 +27,10 @@ export class GraphContainer extends Component {
 
   updateForce = () =>
     this.setState(({ forceLinkToggle }) => {
-      const data = randomizeData()
-      const newLinks = randomizeLinks(data)
+      const nodes = randomizeData()
+      const newLinks = randomizeLinks(nodes)
       return {
-        data,
+        nodes,
         links: forceLinkToggle ? newLinks : [],
         tmpForceLinks: forceLinkToggle ? [] : newLinks,
       }
@@ -43,20 +42,20 @@ export class GraphContainer extends Component {
     this.setState(({ width }) => ({ width: width === STD_WIDTH ? STD_WIDTH / 2 : STD_WIDTH }))
 
   onUpdateRandomData = () =>
-    this.setState(({ data }) => {
-      const { length } = data
+    this.setState(({ nodes }) => {
+      const { length } = nodes
       const rndIdx = jz.num.randBetween(0, length - 1)
       const plusOrMinus = jz.num.randBetween(0, 1)
       const {
         [rndIdx]: { size },
-      } = data
+      } = nodes
 
-      data[rndIdx].size = (plusOrMinus < 1 && size > 10) || size > 60 ? size - 10 : size + 10
+      nodes[rndIdx].size = (plusOrMinus < 1 && size > 10) || size > 60 ? size - 10 : size + 10
 
-      return { data: data.concat([]) }
+      return { nodes: nodes.concat([]) }
     })
 
-  onShuffleIdxes = () => this.setState(({ data }) => ({ data: jz.arr.shuffle(data).concat([]) }))
+  onShuffleIdxes = () => this.setState(({ nodes }) => ({ nodes: jz.arr.shuffle(nodes).concat([]) }))
 
   onToggleLinks = () =>
     this.setState(({ forceLinkToggle, links, tmpForceLinks }) => ({
@@ -66,9 +65,9 @@ export class GraphContainer extends Component {
     }))
 
   onRandomizeLinks = () =>
-    this.setState(({ links, tmpForceLinks, data }) => ({
-      links: links.length ? randomizeLinks(data) : [],
-      tmpForceLinks: tmpForceLinks.length ? randomizeLinks(data) : [],
+    this.setState(({ links, tmpForceLinks, nodes }) => ({
+      links: links.length ? randomizeLinks(nodes) : [],
+      tmpForceLinks: tmpForceLinks.length ? randomizeLinks(nodes) : [],
     }))
 
   onToggleLinkType = () =>
@@ -77,12 +76,12 @@ export class GraphContainer extends Component {
     }))
 
   onCheckData = () => {
-    console.log('force data', this.state.data)
+    console.log('force data', this.state.nodes)
     console.log('force links', this.state.links)
   }
 
   render() {
-    const { width, data, links, linkType, selNode } = this.state
+    const { width, nodes, links, linkType, selNode } = this.state
     const { component: C } = this.props
 
     return (
@@ -98,7 +97,7 @@ export class GraphContainer extends Component {
           <button onClick={this.onCheckData}>check data</button>
         </div>
         <C
-          nodes={data}
+          nodes={nodes}
           links={links}
           width={width}
           height={STD_HEIGHT}

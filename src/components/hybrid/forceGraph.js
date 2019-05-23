@@ -34,6 +34,8 @@ export class HybridForceGraph extends Component {
       leave: PropTypes.func.isRequired,
       keyAccessor: PropTypes.func.isRequired,
     }),
+    nodeTickHandler: PropTypes.func,
+    linkTickHandler: PropTypes.func,
   }
 
   static defaultProps = {
@@ -89,6 +91,7 @@ export class HybridForceGraph extends Component {
   applyLinkTick = (linkSel) => linkSel.attr('d', this.getLinkPath)
 
   ticked = () => {
+    const { nodeTickHandler, linkTickHandler } = this.props
     const { links, nodes } = this.state
 
     this.simulation.nodeSel.data(nodes, function(d) {
@@ -99,8 +102,13 @@ export class HybridForceGraph extends Component {
       return d ? d.source.id + d.target.id : this.id
     })
 
-    this.applyNodeTick(this.simulation.nodeSel)
-    this.applyLinkTick(this.simulation.linkSel)
+    nodeTickHandler
+      ? nodeTickHandler(this.simulation.nodeSel)
+      : this.applyNodeTick(this.simulation.nodeSel)
+
+    linkTickHandler
+      ? linkTickHandler(this.simulation.linkSel)
+      : this.applyLinkTick(this.simulation.linkSel)
   }
 
   onEnd = () => {
