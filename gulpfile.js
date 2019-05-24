@@ -4,28 +4,19 @@ const awspublish = require('gulp-awspublish')
 const parallelize = require('concurrent-transform')
 const rename = require('gulp-rename')
 
-const { version } = require('./package.json')
+const storyDeploy = process.env.DEPLOY_STORY
 
-const bucket = 'combining-react-and-d3'
-const distrId = 'E3PF43TMM1FXNT'
+const version = '1.0.0'
+
+const bucket = !storyDeploy ? 'combining-react-and-d3' : 'combining-react-and-d3-storybook'
+const distrId = !storyDeploy ? 'E3PF43TMM1FXNT' : 'EFRPAR6FIHA21'
 
 const awsConfig = require('./awsConfig.json')
 AWS.config.loadFromPath('./awsConfig.json')
 
 const cloudfront = new AWS.CloudFront()
-const s3 = new AWS.S3()
 
-const buildPath = './build'
-
-gulp.task('s3versionCheck', (cb) => {
-  s3.listObjects({ Bucket: bucket, Prefix: `v${version}` }, (err, data) => {
-    if (err)
-      throw new Error(`[AWS-ERROR]: could not list ths bucket's (${bucket}) contents. \n${err}`)
-    const { Contents: { length } = [] } = data
-    if (length) throw new Error(`[DEPLOYMENT]: this version was already deployed, aborting...`)
-    cb()
-  })
-})
+const buildPath = !storyDeploy ? './build' : './storybook-static'
 
 gulp.task('s3deploy', () => {
   const publisher = awspublish.create({
@@ -47,7 +38,7 @@ gulp.task('invalidateCloudFrontCache', (cb) => {
   const options = {
     DistributionId: distrId,
     InvalidationBatch: {
-      CallerReference: `soundboard-v${version}`,
+      CallerReference: `react&d3-v${version}`,
       Paths: {
         Quantity: 1,
         Items: ['/*'],
@@ -84,7 +75,4 @@ gulp.task('updateDistr', (cb) => {
   })
 })
 
-gulp.task(
-  'deploy',
-  gulp.series('s3versionCheck', 's3deploy', 'updateDistr', 'invalidateCloudFrontCache'),
-)
+gulp.task('deploy', gulp.series('s3deploy', 'updateDistr', 'invalidateCloudFrontCache'))
