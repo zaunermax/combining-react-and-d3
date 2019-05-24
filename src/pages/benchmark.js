@@ -95,7 +95,7 @@ class BenchmarkContainer extends Component {
         : shouldDoNewIteration(oldState, state, itData)
         ? getNewIterationData(itData)
         : iterationsFinished(itData)
-        ? { benchmarkFinished: true, componentType: location.pathname }
+        ? { benchmarkFinished: true }
         : null
     })
   }
@@ -121,7 +121,8 @@ class BenchmarkContainer extends Component {
     })
   }
 
-  getForceComponentRenderer = ({ ForceComponent }) => () => {
+  render() {
+    const { component: ForceComponent } = this.props
     const {
       nodes = [],
       links = [],
@@ -135,7 +136,7 @@ class BenchmarkContainer extends Component {
     return benchmarkRunning ? (
       <>
         <IterationCnt>
-          <div>{this.props.location.pathname}</div>
+          <div>{ForceComponent.displayName}</div>
           <div>Current iteration: {currentIteration + 1}</div>
           <div>Iteration cnt: {iterationCnt}</div>
         </IterationCnt>
@@ -158,41 +159,40 @@ class BenchmarkContainer extends Component {
       <BenchmarkResults iterations={iterations} />
     )
   }
-
-  render() {
-    const { match } = this.props
-
-    return (
-      <Container>
-        <Switch>
-          {forceVariations.map(({ path, ForceComponent }) => (
-            <Route
-              key={match.path + path}
-              path={match.path + path}
-              render={this.getForceComponentRenderer({ ForceComponent })}
-              exact
-            />
-          ))}
-          <Route
-            path={match.path}
-            render={() => (
-              <ul>
-                <li>
-                  <Link to={match.url + '/d3'}>Pure D3</Link>
-                </li>
-                <li>
-                  <Link to={match.url + '/hybrid'}>D3 React Hybrid</Link>
-                </li>
-                <li>
-                  <Link to={match.url + '/react'}>Pure React</Link>
-                </li>
-              </ul>
-            )}
-          />
-        </Switch>
-      </Container>
-    )
-  }
 }
 
-export default BenchmarkContainer
+const BenchmarkRouting = ({ match }) => (
+  <Container>
+    <Switch>
+      {forceVariations.map(({ path, ForceComponent }) => {
+        const newPath = match.path + path
+        return (
+          <Route
+            key={newPath}
+            path={newPath}
+            render={() => <BenchmarkContainer component={ForceComponent} />}
+            exact
+          />
+        )
+      })}
+      <Route
+        path={match.path}
+        render={() => (
+          <ul>
+            <li>
+              <Link to={match.url + '/d3'}>Pure D3</Link>
+            </li>
+            <li>
+              <Link to={match.url + '/hybrid'}>D3 React Hybrid</Link>
+            </li>
+            <li>
+              <Link to={match.url + '/react'}>Pure React</Link>
+            </li>
+          </ul>
+        )}
+      />
+    </Switch>
+  </Container>
+)
+
+export default BenchmarkRouting
