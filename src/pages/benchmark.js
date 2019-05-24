@@ -23,8 +23,6 @@ const IterationCnt = styled.div`
   left: 0;
 `
 
-const NR_ITERATIONS = 1
-
 const TestIterations = Object.freeze([
   { nrOfNodes: 10, nrOfLinks: 5 },
   //{ nrOfNodes: 50, nrOfLinks: 30 },
@@ -49,9 +47,9 @@ const generateRandData = ({ nrOfNodes, nrOfLinks }) => {
   return generateRandomNodeData(nrOfNodes, nrOfLinks)
 }
 
-const calcNewItData = ({ iterationCnt, currentIteration }) => ({
-  newCurrIt: iterationCnt === NR_ITERATIONS ? currentIteration + 1 : currentIteration,
-  newItCnt: iterationCnt < NR_ITERATIONS ? iterationCnt + 1 : 1,
+const calcNewItData = ({ iterationCnt, currentIteration }, nrIterations) => ({
+  newCurrIt: iterationCnt === nrIterations ? currentIteration + 1 : currentIteration,
+  newItCnt: iterationCnt < nrIterations ? iterationCnt + 1 : 1,
 })
 
 const shouldDoNewIteration = (
@@ -82,14 +80,13 @@ class BenchmarkContainer extends Component {
       currentIteration,
       iterationCnt: 1,
       benchmarkRunning: true,
-      iterations: Array.from(Array(TestIterations.length), () => Array(NR_ITERATIONS)),
+      iterations: Array.from(Array(TestIterations.length), () => Array(props.nrIterations)),
     }
   }
 
   componentDidUpdate({ location }, oldState) {
-    this.setState((state) => {
-      const itData = calcNewItData(state)
-
+    this.setState((state, { nrIterations }) => {
+      const itData = calcNewItData(state, nrIterations)
       return state.benchmarkFinished
         ? null
         : shouldDoNewIteration(oldState, state, itData)
@@ -161,32 +158,43 @@ class BenchmarkContainer extends Component {
   }
 }
 
-const BenchmarkRouting = ({ match }) => (
+const BenchmarkRouting = ({
+  match: {
+    path,
+    url,
+    params: { nrIterations = 1 },
+  },
+}) => (
   <Container>
     <Switch>
-      {forceVariations.map(({ path, ForceComponent }) => {
-        const newPath = match.path + path
+      {forceVariations.map(({ path: nestedPath, ForceComponent }) => {
+        const newPath = path + nestedPath
         return (
           <Route
+            exact
             key={newPath}
             path={newPath}
-            render={() => <BenchmarkContainer component={ForceComponent} />}
-            exact
+            render={() => (
+              <BenchmarkContainer
+                component={ForceComponent}
+                nrIterations={Number(nrIterations) || 1}
+              />
+            )}
           />
         )
       })}
       <Route
-        path={match.path}
+        path={path}
         render={() => (
           <ul>
             <li>
-              <Link to={match.url + '/d3'}>Pure D3</Link>
+              <Link to={url + '/d3'}>Pure D3</Link>
             </li>
             <li>
-              <Link to={match.url + '/hybrid'}>D3 React Hybrid</Link>
+              <Link to={url + '/hybrid'}>D3 React Hybrid</Link>
             </li>
             <li>
-              <Link to={match.url + '/react'}>Pure React</Link>
+              <Link to={url + '/react'}>Pure React</Link>
             </li>
           </ul>
         )}
