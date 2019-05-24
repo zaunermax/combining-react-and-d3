@@ -1,6 +1,6 @@
 {
   "name": "combining-react-and-d3",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "d3-array": "^2.0.3",
