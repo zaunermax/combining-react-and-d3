@@ -29,22 +29,28 @@
     "@storybook/addon-links": "^5.0.11",
     "@storybook/addons": "^5.0.11",
     "@storybook/react": "^5.0.11",
+    "aws-sdk": "^2.462.0",
     "babel-loader": "8.0.5",
+    "concurrent-transform": "^1.0.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-prettier": "^3.1.0",
+    "gulp": "^4.0.2",
+    "gulp-awspublish": "^4.0.0",
+    "gulp-rename": "^1.4.0",
     "husky": "^2.3.0",
     "prettier": "^1.17.1",
     "pretty-quick": "^1.10.0",
-    "prop-types": "^15.7.2"
+    "prop-types": "^15.7.2",
+    "serve": "^10.0.1"
   },
   "scripts": {
     "precommit": "pretty-quick --staged",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "deploy": "gulp deploy",
+    "serve": "serve -s build"
   },
   "eslintConfig": {
     "extends": "react-app"
