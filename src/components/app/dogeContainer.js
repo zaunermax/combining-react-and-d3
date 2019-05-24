@@ -1,5 +1,7 @@
 import React from 'react'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
+import styled from 'styled-components/macro'
+import Autosizer from 'react-virtualized-auto-sizer'
 import normalDoge from 'assets/doge.jpg'
 import bossDoge from 'assets/bossDoge.jpg'
 import curiousDoge from 'assets/curiousDoge.jpg'
@@ -31,19 +33,17 @@ const dogeLinks = [
 ]
 
 const simulationOptions = {
-  radiusMultiplier: 1.6,
-  strength: 0.5,
-  linkDistance: 200,
+  radiusMultiplier: 1.5,
+  strength: 0.3,
+  linkDistance: 250,
   linkStrength: 0.6,
-  reheatAlpha: 2,
 }
 
-const LINK_COLOR = '#ebd9ab'
+const DOGE_COLOR = '#ebd9ab'
 
-const groupTickHandler = (nodeSel) =>
-  nodeSel.attr('transform', ({ x, y }) => `translate(${x},${y})`)
+const nodeTickHandler = (nodeSel) => nodeSel.attr('transform', ({ x, y }) => `translate(${x},${y})`)
 
-const groupNodeRenderer = ({ id, size, img }) => (
+const renderNode = ({ id, size, img }) => (
   <g id={id} key={id} className={'node'}>
     <defs>
       <pattern id={`doge_img_${id}`} width={1} height={1} patternContentUnits={'objectBoundingBox'}>
@@ -57,24 +57,36 @@ const groupNodeRenderer = ({ id, size, img }) => (
         />
       </pattern>
     </defs>
+    <circle r={size + 5} fill={DOGE_COLOR} />
     <circle r={size} fill={`url(#doge_img_${id})`} />
   </g>
 )
 
 const customLinkRenderer = ({ source: { id: s }, target: { id: t } }) => (
-  <path key={s + t} id={s + t} stroke={LINK_COLOR} fill={'none'} />
+  <path key={s + t} id={s + t} stroke={DOGE_COLOR} fill={'none'} />
 )
 
+const Container = styled.div`
+  height: 100%;
+  overflow: hidden;
+`
+
 export const DogeContainer = () => (
-  <HybridForceGraph
-    nodes={dogeNodes}
-    links={dogeLinks}
-    height={800}
-    width={800}
-    forceOptions={simulationOptions}
-    nodeTickHandler={groupTickHandler}
-    renderNode={groupNodeRenderer}
-    renderLink={customLinkRenderer}
-    animation={null}
-  />
+  <Container>
+    <Autosizer>
+      {({ width, height }) => (
+        <HybridForceGraph
+          nodes={dogeNodes}
+          links={dogeLinks}
+          height={height}
+          width={width}
+          forceOptions={simulationOptions}
+          nodeTickHandler={nodeTickHandler}
+          renderNode={renderNode}
+          renderLink={customLinkRenderer}
+          animation={null}
+        />
+      )}
+    </Autosizer>
+  </Container>
 )

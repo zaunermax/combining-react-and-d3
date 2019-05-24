@@ -28,7 +28,6 @@ export const ForceGraphProps = Object.freeze({
     strength: PropTypes.number,
     linkStrength: PropTypes.number,
     linkDistance: PropTypes.number,
-    reheatAlpha: PropTypes.number,
   }),
 })
 
@@ -108,19 +107,18 @@ export const getLinkPaths = (simulation) =>
     )
 
 const onDragStarted = (simulation) => (d) => {
-  simulation.alpha(simulation.alpha()).restart()
+  simulation.alphaTarget(0.5).restart()
   d.fx = d.x
   d.fy = d.y
 }
 
-const onDrag = (simulation) => (d) => {
-  simulation.alpha(0.3).restart()
+const onDrag = () => (d) => {
   d.fx = event.x
   d.fy = event.y
 }
 
 const onDragEnded = (simulation, { reheatAlpha }) => (d) => {
-  simulation.alpha(reheatAlpha || 1).restart()
+  simulation.alphaTarget(0).restart()
   simulation.alphaMin(0.001)
   d.fx = null
   d.fy = null

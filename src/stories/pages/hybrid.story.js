@@ -1,9 +1,10 @@
+import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { GraphContainer } from 'components/app/stateContainer'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
-import React from 'react'
 import { applyPropsToComponent } from 'lib/reactUtil'
 import { DogeContainer } from 'components/app/dogeContainer'
+import { GlobalStyle } from 'stories/decorators/fullheightBody'
 
 const rectTickHandler = (nodeSel) => nodeSel.attr('x', (d) => d.x).attr('y', (d) => d.y)
 const rectNodeRenderer = ({ id, size }) => (
@@ -34,6 +35,7 @@ const GroupRender = applyPropsToComponent({
 })(HybridForceGraph)
 
 storiesOf('React & D3 Hybrid', module)
+  .addDecorator(GlobalStyle)
   .add('Standard hybrid graph', () => <GraphContainer component={HybridForceGraph} />)
   .add('Hybrid graph without animation', () => <GraphContainer component={GraphWoAnimation} />)
   .add('Custom render animation', () => <GraphContainer component={CustomRender} />)

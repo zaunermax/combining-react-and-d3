@@ -20,7 +20,6 @@ const G = styled.g`
 `
 
 const Container = styled.span`
-  position: relative;
   display: inline-block;
 `
 

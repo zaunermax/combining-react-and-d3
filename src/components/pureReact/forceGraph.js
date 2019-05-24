@@ -17,7 +17,6 @@ const gStyle = {
 }
 
 const containerStyle = {
-  position: 'relative',
   display: 'inline-block',
 }
 
