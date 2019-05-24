@@ -3,8 +3,7 @@ import styled from 'styled-components/macro'
 import Autosizer from 'react-virtualized-auto-sizer'
 import { LINK_TYPES } from 'lib/d3/linkPath'
 import { generateRandomNodeData, reseed } from 'lib/rndHelpers'
-import { BENCHMARK, D3_BENCH, HYBRID_BENCH, PURE_BENCH } from '../routes'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom'
 import { PureD3ForceGraph } from 'components/pureD3/forceGraph'
 import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { PureReactForceGraph } from 'components/pureReact/forceGraph'
@@ -36,9 +35,9 @@ const TestIterations = Object.freeze([
 ])
 
 const forceVariations = Object.freeze([
-  { path: D3_BENCH, ForceComponent: PureD3ForceGraph },
-  { path: HYBRID_BENCH, ForceComponent: HybridForceGraph },
-  { path: PURE_BENCH, ForceComponent: PureReactForceGraph },
+  { path: '/d3', ForceComponent: PureD3ForceGraph },
+  { path: '/hybrid', ForceComponent: HybridForceGraph },
+  { path: '/react', ForceComponent: PureReactForceGraph },
 ])
 
 const forceOptions = Object.freeze({
@@ -122,33 +121,19 @@ class BenchmarkContainer extends Component {
     })
   }
 
-  getForceComponentRenderer = ({ ForceComponent, height, width }) => () => {
-    const { nodes = [], links = [] } = this.state
-    return (
-      <ForceComponent
-        nodes={nodes}
-        links={links}
-        linkType={LINK_TYPES.CURVED}
-        height={height}
-        width={width}
-        forceOptions={forceOptions}
-        onSimulationStart={this.onStartHandler}
-        onSimulationEnd={this.onEndHandler}
-      />
-    )
-  }
-
-  render() {
+  getForceComponentRenderer = ({ ForceComponent }) => () => {
     const {
-      benchmarkRunning,
-      iterations,
+      nodes = [],
+      links = [],
       currentIteration,
       iterationCnt,
+      benchmarkRunning,
+      iterations,
       benchmarkFinished,
     } = this.state
 
     return benchmarkRunning ? (
-      <Container>
+      <>
         <IterationCnt>
           <div>{this.props.location.pathname}</div>
           <div>Current iteration: {currentIteration + 1}</div>
@@ -156,22 +141,56 @@ class BenchmarkContainer extends Component {
         </IterationCnt>
         <Autosizer>
           {({ height, width }) => (
-            <Switch>
-              {forceVariations.map(({ path, ForceComponent }) => (
-                <Route
-                  key={path}
-                  path={path}
-                  render={this.getForceComponentRenderer({ ForceComponent, height, width })}
-                  exact
-                />
-              ))}
-              <Redirect from={BENCHMARK} to={D3_BENCH} />
-            </Switch>
+            <ForceComponent
+              nodes={nodes}
+              links={links}
+              linkType={LINK_TYPES.CURVED}
+              height={height}
+              width={width}
+              forceOptions={forceOptions}
+              onSimulationStart={this.onStartHandler}
+              onSimulationEnd={this.onEndHandler}
+            />
           )}
         </Autosizer>
-      </Container>
+      </>
     ) : !benchmarkFinished ? null : (
       <BenchmarkResults iterations={iterations} />
+    )
+  }
+
+  render() {
+    const { match } = this.props
+
+    return (
+      <Container>
+        <Switch>
+          {forceVariations.map(({ path, ForceComponent }) => (
+            <Route
+              key={match.path + path}
+              path={match.path + path}
+              render={this.getForceComponentRenderer({ ForceComponent })}
+              exact
+            />
+          ))}
+          <Route
+            path={match.path}
+            render={() => (
+              <ul>
+                <li>
+                  <Link to={match.url + '/d3'}>Pure D3</Link>
+                </li>
+                <li>
+                  <Link to={match.url + '/hybrid'}>D3 React Hybrid</Link>
+                </li>
+                <li>
+                  <Link to={match.url + '/react'}>Pure React</Link>
+                </li>
+              </ul>
+            )}
+          />
+        </Switch>
+      </Container>
     )
   }
 }

@@ -4,9 +4,6 @@ import { NotFound } from 'pages/404'
 
 export const ROOT = '/'
 export const BENCHMARK = '/bench'
-export const D3_BENCH = BENCHMARK + '/d3'
-export const HYBRID_BENCH = BENCHMARK + '/hybrid'
-export const PURE_BENCH = BENCHMARK + '/react'
 
 const DEFAULT = BENCHMARK
 
