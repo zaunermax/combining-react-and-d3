@@ -27,3 +27,5 @@ yarn-error.log*
 workspace.xml
 usage.statistics.xml
 tasks.xml
+
+storybook-static
