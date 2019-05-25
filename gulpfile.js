@@ -8,8 +8,8 @@ const storyDeploy = process.env.DEPLOY_STORY
 
 const version = '1.0.0'
 
-const bucket = !storyDeploy ? 'combining-react-and-d3' : 'combining-react-and-d3-storybook'
-const distrId = !storyDeploy ? 'E3PF43TMM1FXNT' : 'EFRPAR6FIHA21'
+const bucket = !storyDeploy ? 'combining-react-and-d3-bench' : 'combining-react-and-d3-storybook'
+const distrId = !storyDeploy ? 'E31TPNT2EHFLP8' : 'EFRPAR6FIHA21'
 
 const awsConfig = require('./awsConfig.json')
 AWS.config.loadFromPath('./awsConfig.json')
