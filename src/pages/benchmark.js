@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components/macro'
-import Autosizer from 'react-virtualized-auto-sizer'
+import AutoSizer from 'react-virtualized-auto-sizer'
 import { LINK_TYPES } from 'lib/d3/linkPath'
 import { generateRandomNodeData, reseed } from 'lib/rndHelpers'
 import { Link, Route, Switch } from 'react-router-dom'
@@ -9,6 +9,10 @@ import { HybridForceGraph } from 'components/hybrid/forceGraph'
 import { PureReactForceGraph } from 'components/pureReact/forceGraph'
 import { RequestAnimationFramePerformance } from 'lib/rafPerformance'
 import BenchmarkResults from 'components/performance/benchmarkResult'
+
+const D3_ROUTE = '/d3'
+const HYBRID_ROUTE = '/hybrid'
+const REACT_ROUTE = '/react'
 
 const Container = styled.div`
   width: 100vw;
@@ -23,7 +27,7 @@ const IterationCnt = styled.div`
   left: 0;
 `
 
-const TestIterations = Object.freeze([
+export const TestIterations = Object.freeze([
   { nrOfNodes: 10, nrOfLinks: 5 },
   { nrOfNodes: 50, nrOfLinks: 30 },
   { nrOfNodes: 100, nrOfLinks: 100 },
@@ -33,9 +37,9 @@ const TestIterations = Object.freeze([
 ])
 
 const forceVariations = Object.freeze([
-  { path: '/d3', ForceComponent: PureD3ForceGraph },
-  { path: '/hybrid', ForceComponent: HybridForceGraph },
-  { path: '/react', ForceComponent: PureReactForceGraph },
+  { path: D3_ROUTE, ForceComponent: PureD3ForceGraph },
+  { path: HYBRID_ROUTE, ForceComponent: HybridForceGraph },
+  { path: REACT_ROUTE, ForceComponent: PureReactForceGraph },
 ])
 
 const forceOptions = Object.freeze({
@@ -120,6 +124,7 @@ class BenchmarkContainer extends Component {
 
   render() {
     const { component: ForceComponent } = this.props
+    const { displayName } = ForceComponent
     const {
       nodes = [],
       links = [],
@@ -133,11 +138,11 @@ class BenchmarkContainer extends Component {
     return benchmarkRunning ? (
       <>
         <IterationCnt>
-          <div>{ForceComponent.displayName}</div>
+          <div>{displayName}</div>
           <div>Current iteration: {currentIteration + 1}</div>
           <div>Iteration cnt: {iterationCnt}</div>
         </IterationCnt>
-        <Autosizer>
+        <AutoSizer>
           {({ height, width }) => (
             <ForceComponent
               nodes={nodes}
@@ -150,10 +155,14 @@ class BenchmarkContainer extends Component {
               onSimulationEnd={this.onEndHandler}
             />
           )}
-        </Autosizer>
+        </AutoSizer>
       </>
     ) : !benchmarkFinished ? null : (
-      <BenchmarkResults iterations={iterations} />
+      <BenchmarkResults
+        iterations={iterations}
+        componentType={displayName}
+        testIterations={TestIterations}
+      />
     )
   }
 }
@@ -188,13 +197,13 @@ const BenchmarkRouting = ({
         render={() => (
           <ul>
             <li>
-              <Link to={url + '/d3'}>Pure D3</Link>
+              <Link to={url + D3_ROUTE}>Pure D3</Link>
             </li>
             <li>
-              <Link to={url + '/hybrid'}>D3 React Hybrid</Link>
+              <Link to={url + HYBRID_ROUTE}>D3 React Hybrid</Link>
             </li>
             <li>
-              <Link to={url + '/react'}>Pure React</Link>
+              <Link to={url + REACT_ROUTE}>Pure React</Link>
             </li>
           </ul>
         )}

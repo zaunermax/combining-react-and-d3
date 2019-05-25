@@ -5,7 +5,7 @@ import { NotFound } from 'pages/404'
 export const ROOT = '/'
 export const BENCHMARK = '/bench/:nrIterations'
 
-const DEFAULT = 'bench/1'
+const DEFAULT = 'bench/10'
 
 const AsyncBenchmark = lazy(() => import('./pages/benchmark'))
 

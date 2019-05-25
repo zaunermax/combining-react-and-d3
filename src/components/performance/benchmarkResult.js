@@ -2,7 +2,21 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components/macro'
 
-const getAddUp = (key) => (total, obj) => total + obj[key]
+const BenchmarkResultsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`
+
+const ComponentTypeHeadline = styled.div`
+  padding: 10px;
+  border: 1px solid lightgray;
+  margin: 10px 10px 0 10px;
+  border-radius: 5px;
+  color: #09131e;
+  font-size: 1.5rem;
+  font-weight: bolder;
+`
 
 const ResultContainer = styled.div`
   display: flex;
@@ -41,6 +55,8 @@ const Result = styled.div`
   margin: 3px 0;
 `
 
+const getAddUp = (key) => (total, obj) => total + obj[key]
+
 const ResultField = ({ type, result, unit = '' }) => (
   <ResultFieldContainer>
     <Type>{type} </Type>
@@ -51,29 +67,35 @@ const ResultField = ({ type, result, unit = '' }) => (
   </ResultFieldContainer>
 )
 
-const BenchmarkResults = ({ iterations }) => (
-  <ResultContainer>
-    {iterations.map((it, idx) => {
-      const avgTime = it.reduce(getAddUp('time'), 0) / it.length
-      const avgFPS = it.reduce(getAddUp('avgFPS'), 0) / it.length
-      const avgFrameTime = it.reduce(getAddUp('avgFrameTime'), 0) / it.length
-      const avgHighestFrameTime = it.reduce(getAddUp('highestFrameTime'), 0) / it.length
+const BenchmarkResults = ({ iterations, testIterations, componentType }) => (
+  <BenchmarkResultsContainer>
+    <ComponentTypeHeadline>{componentType}</ComponentTypeHeadline>
+    <ResultContainer>
+      {iterations.map((it, idx) => {
+        const avgTime = it.reduce(getAddUp('time'), 0) / it.length
+        const avgFPS = it.reduce(getAddUp('avgFPS'), 0) / it.length
+        const avgFrameTime = it.reduce(getAddUp('avgFrameTime'), 0) / it.length
+        const avgHighestFrameTime = it.reduce(getAddUp('highestFrameTime'), 0) / it.length
+        const nrOfNodes = testIterations[idx].nrOfNodes
+        const nrOfLinks = testIterations[idx].nrOfLinks
 
-      return (
-        <IterationContainer key={idx}>
-          <ItHeadline>AVG of {it.length} iterations:</ItHeadline>
-          <ResultField type={'FPS'} result={Math.round(avgFPS)} />
-          <ResultField type={'Time'} result={Math.round(avgTime)} unit={'ms'} />
-          <ResultField type={'Frame time'} result={Math.round(avgFrameTime)} unit={'ms'} />
-          <ResultField
-            type={'Max frame time'}
-            result={Math.round(avgHighestFrameTime)}
-            unit={'ms'}
-          />
-        </IterationContainer>
-      )
-    })}
-  </ResultContainer>
+        return (
+          <IterationContainer key={idx}>
+            <ItHeadline>AVG of {it.length} iterations:</ItHeadline>
+            <ResultField type={'Nodes/Links'} result={`${nrOfNodes}/${nrOfLinks}`} />
+            <ResultField type={'FPS'} result={Math.round(avgFPS)} />
+            <ResultField type={'Time'} result={Math.round(avgTime)} unit={'ms'} />
+            <ResultField type={'Frame time'} result={Math.round(avgFrameTime)} unit={'ms'} />
+            <ResultField
+              type={'Max frame time'}
+              result={Math.round(avgHighestFrameTime)}
+              unit={'ms'}
+            />
+          </IterationContainer>
+        )
+      })}
+    </ResultContainer>
+  </BenchmarkResultsContainer>
 )
 
 BenchmarkResults.propTypes = {
@@ -86,7 +108,14 @@ BenchmarkResults.propTypes = {
         highestFrameTime: PropTypes.number,
       }),
     ),
-  ),
+  ).isRequired,
+  testIterations: PropTypes.arrayOf(
+    PropTypes.shape({
+      nrOfNodes: PropTypes.number.isRequired,
+      nrOfLinks: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  componentType: PropTypes.string.isRequired,
 }
 
 export default BenchmarkResults
