@@ -25,10 +25,10 @@ const IterationCnt = styled.div`
 
 const TestIterations = Object.freeze([
   { nrOfNodes: 10, nrOfLinks: 5 },
-  //{ nrOfNodes: 50, nrOfLinks: 30 },
+  { nrOfNodes: 50, nrOfLinks: 30 },
   { nrOfNodes: 100, nrOfLinks: 100 },
-  //{ nrOfNodes: 250, nrOfLinks: 150 },
-  //{ nrOfNodes: 500, nrOfLinks: 250 },
+  { nrOfNodes: 250, nrOfLinks: 150 },
+  { nrOfNodes: 500, nrOfLinks: 250 },
   { nrOfNodes: 1000, nrOfLinks: 500 },
 ])
 
