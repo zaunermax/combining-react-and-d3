@@ -211,17 +211,18 @@ const initialSelect = (simulation, { ref }) => {
   simulation.nodeSel = selection.append('g').selectAll('.node')
 }
 
-const applyUpdatePattern = (simulation, { nodes, links }) => {
-  simulation.nodeSel = simulation.nodeSel.data(nodes, ({ id }) => id)
-  simulation.linkSel = simulation.linkSel.data(
-    links,
-    ({ source: { id: s }, target: { id: t } }) => s + t,
-  )
+const applyUpdatePattern = ({ simulation, options: { nodes, links } }) => {
+  simulation.nodeSel = simulation.nodeSel.data(nodes, function(d) {
+    return d ? d.id : this.id
+  })
+  simulation.linkSel = simulation.linkSel.data(links, function(d) {
+    return d ? d.source.id + d.target.id : this.id
+  })
 }
 
 const applyPureD3Selection = ({ simulation, options }) => {
   !options.update && initialSelect(simulation, options)
-  applyUpdatePattern(simulation, options)
+  applyUpdatePattern({ simulation, options })
   options.nodeUpdateCycle(simulation)
 }
 
@@ -242,6 +243,7 @@ const pureD3Updater = pipeAppliers(
 const hybridUpdater = pipeAppliers(
   applyNewNodeData,
   applyNewRefs,
+  applyUpdatePattern,
   applyTickHandler,
   applyForceHandlers,
   applyDragHandlers,

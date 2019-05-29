@@ -92,15 +92,6 @@ export class HybridForceGraph extends Component {
 
   ticked = () => {
     const { nodeTickHandler, linkTickHandler } = this.props
-    const { links, nodes } = this.state
-
-    this.simulation.nodeSel.data(nodes, function(d) {
-      return d ? d.id : this.id
-    })
-
-    this.simulation.linkSel.data(links, function(d) {
-      return d ? d.source.id + d.target.id : this.id
-    })
 
     nodeTickHandler
       ? nodeTickHandler(this.simulation.nodeSel)
