@@ -136,7 +136,7 @@ class BenchmarkContainer extends Component {
     } = this.state
 
     return benchmarkRunning ? (
-      <>
+      <Container>
         <IterationCnt>
           <div>{displayName}</div>
           <div>Current iteration: {currentIteration + 1}</div>
@@ -156,7 +156,7 @@ class BenchmarkContainer extends Component {
             />
           )}
         </AutoSizer>
-      </>
+      </Container>
     ) : !benchmarkFinished ? null : (
       <BenchmarkResults
         iterations={iterations}
@@ -174,42 +174,40 @@ const BenchmarkRouting = ({
     params: { nrIterations = 1 },
   },
 }) => (
-  <Container>
-    <Switch>
-      {forceVariations.map(({ path: nestedPath, ForceComponent }) => {
-        const newPath = path + nestedPath
-        return (
-          <Route
-            exact
-            key={newPath}
-            path={newPath}
-            render={() => (
-              <BenchmarkContainer
-                component={ForceComponent}
-                nrIterations={Number(nrIterations) || 1}
-              />
-            )}
-          />
-        )
-      })}
-      <Route
-        path={path}
-        render={() => (
-          <ul>
-            <li>
-              <Link to={url + D3_ROUTE}>Pure D3</Link>
-            </li>
-            <li>
-              <Link to={url + HYBRID_ROUTE}>D3 React Hybrid</Link>
-            </li>
-            <li>
-              <Link to={url + REACT_ROUTE}>Pure React</Link>
-            </li>
-          </ul>
-        )}
-      />
-    </Switch>
-  </Container>
+  <Switch>
+    {forceVariations.map(({ path: nestedPath, ForceComponent }) => {
+      const newPath = path + nestedPath
+      return (
+        <Route
+          exact
+          key={newPath}
+          path={newPath}
+          render={() => (
+            <BenchmarkContainer
+              component={ForceComponent}
+              nrIterations={Number(nrIterations) || 1}
+            />
+          )}
+        />
+      )
+    })}
+    <Route
+      path={path}
+      render={() => (
+        <ul>
+          <li>
+            <Link to={url + D3_ROUTE}>Pure D3</Link>
+          </li>
+          <li>
+            <Link to={url + HYBRID_ROUTE}>D3 React Hybrid</Link>
+          </li>
+          <li>
+            <Link to={url + REACT_ROUTE}>Pure React</Link>
+          </li>
+        </ul>
+      )}
+    />
+  </Switch>
 )
 
 export default BenchmarkRouting
