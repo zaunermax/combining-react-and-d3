@@ -9,18 +9,10 @@ In order to start this project you will need a fairly recent version of node.js 
 First you need to install the project:
 
 ```bash
-npm i
+npm ci
 ```
 
-In order for the project to start correctly, create a `.env` file in the root of your project which should contain the following code:
-
-```dotenv
-NODE_PATH = src
-```
-
-Make sure you saved the `.env` file before executing any other commands.
-
-Finally you can proceed and run the storybook suite via the following command:
+You can proceed and run the storybook suite via the following command:
 
 ```bash
 npm run storybook
@@ -28,5 +20,16 @@ npm run storybook
 
 Now you can look at the components in `localhost:6006`.
 
-Note, that the storybook is running in development mode, the components therefore are slower. I will provide a link to
-a website that hosts the components in the future.
+The benchmark application can be started via the command: 
+
+```bash
+npm run start
+```
+
+After the initial start-up phase, the application is available in `localhost:3000`
+
+Note, that the storybook is running in development mode, the components' performance is therefore a lot worse.
+
+The two applications are hosted on
+https://reactd3bench.zaunermax.at
+https://reactd3storybook.zaunermax.at
