@@ -30,6 +30,9 @@ After the initial start-up phase, the application is available in `localhost:300
 
 Note, that the storybook is running in development mode, the components' performance is therefore a lot worse.
 
-The two applications are hosted on
-https://reactd3bench.zaunermax.at
-https://reactd3storybook.zaunermax.at
+The two applications are hosted online: 
+
+Benchmark application: https://reactd3bench.zaunermax.at
+
+Component Storybook: https://reactd3storybook.zaunermax.at
+
